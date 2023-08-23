@@ -1,11 +1,11 @@
 module.exports = {
   apps: [
     {
-      name: "dent-cms-portal",
+      name: "master-cms-portal",
       script: "npm start",
       autorestart: true,
       env: {
-        PORT: 1002,
+        PORT: 1004,
         NODE_ENV: "production",
         SERVER_ENV: "production",
         DEBUG: "server:*",
