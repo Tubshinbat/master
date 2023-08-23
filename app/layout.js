@@ -11,8 +11,8 @@ import { Suspense } from "react";
 import Loader from "components/Generals/Loader";
 
 export const metadata = {
-  title: `Гермон Дентал” шүдний эмнэлэг `,
-  description: "Гермон Дентал” шүдний эмнэлэг",
+  title: `"Шилдэг мастер” сургалт, судалгаа, үйлчилгээний төв `,
+  description: `"Шилдэг мастер” сургалт, судалгаа, үйлчилгээний төв`,
 };
 
 export default function RootLayout({ children }) {

@@ -55,7 +55,7 @@ const Footer = () => {
                   <a href={base.baseUrl}> Эхлэл </a>
                 </li>
                 <li>
-                  <a href={base.baseUrl + "/services"}>Үйлчилгээнүүд</a>
+                  <a href={base.baseUrl + "/members"}>Гишүүн</a>
                 </li>
                 <li>
                   <a href={base.baseUrl + "/news"}> Зөвлөгөө, мэдээлэл </a>

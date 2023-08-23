@@ -1,7 +1,8 @@
 "use client";
 import { Tree } from "antd";
 import { getMemberCategories } from "lib/getFetchers";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 const menuGenerateData = (categories) => {
   let datas = [];
@@ -19,25 +20,54 @@ const menuGenerateData = (categories) => {
 };
 
 const Side = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [data, setData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [checkedKeys, setCheckedKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const onExpand = (expandedKeysValue) => {
-    console.log("onExpand", expandedKeysValue);
-    // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-    // or, you can remove all expanded children keys.
     setExpandedKeys(expandedKeysValue);
     setAutoExpandParent(false);
   };
   const onCheck = (checkedKeysValue) => {
-    console.log("onCheck", checkedKeysValue);
+    queryBuild("category", checkedKeysValue);
     setCheckedKeys(checkedKeysValue);
   };
   const onSelect = (selectedKeysValue, info) => {
-    console.log("onSelect", info);
     setSelectedKeys(selectedKeysValue);
+  };
+
+  const createQueryString = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const removeQuery = useCallback(
+    (name, value) => {
+      const params = new URLSearchParams(searchParams);
+      params.delete(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const queryBuild = (name, value, isSame = false) => {
+    let query = "?";
+    let params = "";
+    if (isSame === false) {
+      params = createQueryString(name, value);
+    } else {
+      params = removeQuery(name, value);
+    }
+    router.push(pathname + query + params);
   };
 
   useEffect(() => {
@@ -48,6 +78,11 @@ const Side = () => {
 
     fetchData().catch((error) => console.log(error));
   }, []);
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    category && setCheckedKeys(category.split(","));
+  }, [searchParams]);
 
   return (
     <>
