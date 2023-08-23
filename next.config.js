@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["localhost", " localhost:8000", "127.0.0.1", "germondental.com"],
+    domains: ["localhost", " localhost:8000", "127.0.0.1", "node.mn"],
     allowFutureImage: true,
   },
   reactStrictMode: true,
