@@ -114,7 +114,7 @@ const PartnerDetails = ({ data, members }) => {
         <div className="col-lg-9">
           <div className="profile-details">
             <div className="profile-head">
-              <h6> Миний тухай</h6>
+              <h6> Байгууллагын тухай</h6>
             </div>
             <div
               className="profile-detail"
