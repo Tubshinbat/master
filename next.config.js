@@ -4,7 +4,13 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["localhost", " localhost:8000", "127.0.0.1", "node.mn"],
+    domains: [
+      "localhost",
+      "localhost:8000",
+      "localhost:3000",
+      "127.0.0.1",
+      "node.mn",
+    ],
     allowFutureImage: true,
   },
   reactStrictMode: true,

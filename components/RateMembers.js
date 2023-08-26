@@ -1,27 +1,22 @@
 "use client";
-import { getMembers } from "lib/getFetchers";
+import { getRateMembers } from "lib/getFetchers";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import BlockLoad from "./Generals/BlockLoad";
 import NotFound from "./Generals/Notfound";
-import Member from "./Member";
+import RateColMember from "./RateColMember";
+import RateMember from "./RateMember";
 
-const MemberList = ({ plusQuery = "plus=none" }) => {
+const RateMembers = ({ plusQuery = "plus=none" }) => {
   const searchParams = useSearchParams();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [paginate, setPaginate] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const qry = queryBuild();
-      const { members, pagination } = await getMembers(
-        `status=true&${qry}&${plusQuery}`
-      );
-
+      const { members } = await getRateMembers(`${plusQuery}`);
       if (members) setData(members);
 
-      if (pagination) setPaginate(pagination);
       setLoading(false);
     };
 
@@ -58,8 +53,8 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
     const qry = queryBuild();
 
     const fetchData = async (query) => {
-      const { members, pagination } = await getMembers(query + "&" + plusQuery);
-      setPaginate(pagination);
+      const { members, pagination } = await getRateMembers(query);
+
       setData(members);
       setLoading(false);
     };
@@ -67,24 +62,6 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
     setLoading(true);
     fetchData(qry).catch((error) => console.log(error));
   }, [searchParams]);
-
-  const nextpage = () => {
-    const qry = queryBuild();
-
-    const next = async () => {
-      setLoading(true);
-      const { members, pagination } = await getMembers(
-        `${qry}page=${paginate.nextPage}&${plusQuery}`
-      );
-      setData((bs) => [...bs, ...members]);
-      setPaginate(pagination);
-      setLoading(false);
-    };
-
-    if (paginate && paginate.nextPage) {
-      next().catch((error) => console.log(error));
-    }
-  };
 
   if (loading === true && data.length <= 0) {
     return <BlockLoad />;
@@ -99,23 +76,25 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
       <div className="member-list">
         <div className="row gy-4">
           {data &&
-            data.map((el) => (
-              <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={el._id}>
-                <Member data={el} />
-              </div>
-            ))}
+            data.map(
+              (el, index) =>
+                index <= 2 && (
+                  <div
+                    className="col-lg-4 col-md-4 col-sm-6 col-12"
+                    key={el._id}
+                  >
+                    <RateMember data={el} />
+                  </div>
+                )
+            )}
         </div>
       </div>
-      {loading === true && <BlockLoad />}
-      {paginate && paginate.nextPage && (
-        <div className="pagination">
-          <button className="more-page" onClick={() => nextpage()}>
-            Дараагийн хуудас
-          </button>
-        </div>
-      )}
+      <div className="member-col-list">
+        {data &&
+          data.map((el, index) => index > 2 && <RateColMember data={el} />)}
+      </div>
     </>
   );
 };
 
-export default MemberList;
+export default RateMembers;

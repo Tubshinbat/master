@@ -8,72 +8,36 @@ import {
   faFacebookF,
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
-import {
-  faEnvelope,
-  faLink,
-  faPhoneAlt,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLink, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
 
-const Member = ({ data }) => {
-  const contactRender = (link) => {
-    let icon = <FontAwesomeIcon icon={faLink} />;
-
-    switch (link.name.toLowerCase()) {
-      case "facebook": {
-        icon = <FontAwesomeIcon icon={faFacebookF} />;
-        break;
-      }
-      case "twitter": {
-        icon = <FontAwesomeIcon icon={faTwitter} />;
-        break;
-      }
-      case "linkedin":
-        icon = <FontAwesomeIcon icon={faLinkedin} />;
-        break;
-      case "youtube":
-        icon = <FontAwesomeIcon icon={faYoutube} />;
-        break;
-      case "twitch":
-        icon = <FontAwesomeIcon icon={faTwitch} />;
-        break;
-      case "instagram":
-        icon = <FontAwesomeIcon icon={faInstagram} />;
-        break;
-      case "skype":
-        <FontAwesomeIcon icon={faSkype} />;
-        break;
-      case "phone":
-        <FontAwesomeIcon icon={faPhoneAlt} />;
-        break;
-      case "email":
-        icon = <FontAwesomeIcon icon={faEnvelope} />;
-        break;
-      default:
-        icon = <FontAwesomeIcon icon={faLink} />;
-        break;
-    }
-    return icon;
-  };
-
+const RateColMember = ({ data }) => {
   return (
     <>
-      <div className="member-item">
-        <div className="member-head">
-          <Link href={`/members/${data._id}`} className="member-img-box">
-            <Image
-              className="member-img"
-              width="0"
-              height="0"
-              sizes="100vw"
-              quality="100"
-              src={`${base.cdnUrl}/350x350/${data.picture}`}
-            />
-          </Link>
+      <Link href={`/members/${data._id}`} className="member-col-item">
+        <div className="member-col-left">
+          <div className="member-col-head">
+            <div className="member-col-img-box">
+              <Image
+                className="member-img"
+                width="0"
+                height="0"
+                sizes="100vw"
+                quality="100"
+                src={`${base.cdnUrl}/350x350/${data.picture}`}
+              />
+            </div>
+          </div>
+
+          <div className="member-name">
+            <div className="member-col-name">{data.name}</div>
+            <span> {data.position}</span>
+          </div>
+        </div>
+        <div className="ratingCount">
           <div className="member-rate">
             <span> Зэрэглэл </span>
             <div className="star-rating">
@@ -149,43 +113,14 @@ const Member = ({ data }) => {
               </label>
             </div>
           </div>
-        </div>
-        <div className="member-name">
-          <Link href={`/members/${data._id}`}>{data.name}</Link>
-          <span> {data.position}</span>
-        </div>
-        <div className="member-contact">
-          {data.links &&
-            JSON.parse(data.links).map((link) => (
-              <>
-                <a
-                  href={
-                    link.name.toLowerCase() === "phone"
-                      ? "callto:" + link.link
-                      : link.name.toLowerCase() === "email"
-                      ? "mailto:" + link.link
-                      : link.link
-                  }
-                  target="_blank"
-                  className="member-contact-item"
-                >
-                  {contactRender(link)}
-                </a>
-              </>
-            ))}
-        </div>
-        <div className="member-categories">
-          <span> Салбар </span>
-          <div className="cat-list">
-            {data.category &&
-              data.category.map((cat) => (
-                <div className="info-cat-item">{cat.name}</div>
-              ))}
+          <div className="rating-count">
+            <h6>{data.ratingCount}</h6>
+            <span>Хүн үнэлгээ өгсөн</span>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 };
 
-export default Member;
+export default RateColMember;

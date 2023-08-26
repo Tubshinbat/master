@@ -19,7 +19,7 @@ const menuGenerateData = (categories) => {
   return datas;
 };
 
-const Side = () => {
+const PageSide = ({ slug = "/" }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -67,7 +67,7 @@ const Side = () => {
     } else {
       params = removeQuery(name, value);
     }
-    router.push(pathname + query + params);
+    router.push(slug + query + params);
   };
 
   useEffect(() => {
@@ -109,4 +109,4 @@ const Side = () => {
   );
 };
 
-export default Side;
+export default PageSide;

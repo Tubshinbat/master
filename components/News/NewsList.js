@@ -1,12 +1,12 @@
 "use client";
-import { getMembers } from "lib/getFetchers";
+import { getNews } from "lib/getFetchers";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import BlockLoad from "./Generals/BlockLoad";
-import NotFound from "./Generals/Notfound";
-import Member from "./Member";
+import BlockLoad from "./../Generals/BlockLoad";
+import NotFound from "./../Generals/Notfound";
+import News from "./News";
 
-const MemberList = ({ plusQuery = "plus=none" }) => {
+const NewsList = () => {
   const searchParams = useSearchParams();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,13 +14,8 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const qry = queryBuild();
-      const { members, pagination } = await getMembers(
-        `status=true&${qry}&${plusQuery}`
-      );
-
-      if (members) setData(members);
-
+      const { news, pagination } = await getNews(`status=true`);
+      if (news) setData(news);
       if (pagination) setPaginate(pagination);
       setLoading(false);
     };
@@ -32,7 +27,7 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
     let query = "";
     let fields = [];
 
-    const searchFields = ["categories", "name"];
+    const searchFields = ["categories"];
 
     searchFields.map((field) => {
       if (searchParams.get(field)) {
@@ -58,9 +53,9 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
     const qry = queryBuild();
 
     const fetchData = async (query) => {
-      const { members, pagination } = await getMembers(query + "&" + plusQuery);
+      const { news, pagination } = await getNews(query);
       setPaginate(pagination);
-      setData(members);
+      setData(news);
       setLoading(false);
     };
 
@@ -73,10 +68,10 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
 
     const next = async () => {
       setLoading(true);
-      const { members, pagination } = await getMembers(
-        `${qry}page=${paginate.nextPage}&${plusQuery}`
+      const { news, pagination } = await getNews(
+        `${qry}page=${paginate.nextPage}`
       );
-      setData((bs) => [...bs, ...members]);
+      setData((bs) => [...bs, ...news]);
       setPaginate(pagination);
       setLoading(false);
     };
@@ -101,7 +96,7 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
           {data &&
             data.map((el) => (
               <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={el._id}>
-                <Member data={el} />
+                <News data={el} />
               </div>
             ))}
         </div>
@@ -118,4 +113,4 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
   );
 };
 
-export default MemberList;
+export default NewsList;

@@ -50,12 +50,16 @@ const Header = () => {
         </div>
         <div className="top-header-left">
           <ul className="header-menus">{renderMenu(menu)}</ul>
-          <div className="search-box">
-            <input className="search-input" placeholder="Хайлт хийх..." />
-            <button className="search-btn">
+          <form method="get" action="/search" className="search-box">
+            <input
+              className="search-input"
+              name="name"
+              placeholder="Хайлт хийх..."
+            />
+            <button className="search-btn" type="submit">
               <FontAwesomeIcon icon={faSearch} />
             </button>
-          </div>
+          </form>
           <MobileMenu menus={menu} info={info} />
         </div>
       </div>

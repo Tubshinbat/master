@@ -1,6 +1,6 @@
 "use client";
 import { Tree } from "antd";
-import { getMemberCategories } from "lib/getFetchers";
+import { getNewsCategories } from "lib/getFetchers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -19,7 +19,7 @@ const menuGenerateData = (categories) => {
   return datas;
 };
 
-const Side = () => {
+const Side = ({ slug = "/news" }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -67,13 +67,13 @@ const Side = () => {
     } else {
       params = removeQuery(name, value);
     }
-    router.push(pathname + query + params);
+    router.push(slug + query + params);
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const { categories } = await getMemberCategories();
-      if (categories) setData(menuGenerateData(categories));
+      const { newsCategories } = await getNewsCategories();
+      if (newsCategories) setData(menuGenerateData(newsCategories));
     };
 
     fetchData().catch((error) => console.log(error));

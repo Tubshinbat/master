@@ -9,6 +9,7 @@ import Header from "components/Generals/Header";
 import Footer from "components/Generals/Footer";
 import { Suspense } from "react";
 import Loader from "components/Generals/Loader";
+import { ToastContainer } from "react-toastify";
 
 export const metadata = {
   title: `"Шилдэг мастер” сургалт, судалгаа, үйлчилгээний төв `,
@@ -23,6 +24,17 @@ export default function RootLayout({ children }) {
           <Header />
           {children}
           <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         </Suspense>
       </body>
       <Script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></Script>

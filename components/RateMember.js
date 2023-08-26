@@ -8,58 +8,13 @@ import {
   faFacebookF,
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
-import {
-  faEnvelope,
-  faLink,
-  faPhoneAlt,
-  faStar,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLink, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
 
-const Member = ({ data }) => {
-  const contactRender = (link) => {
-    let icon = <FontAwesomeIcon icon={faLink} />;
-
-    switch (link.name.toLowerCase()) {
-      case "facebook": {
-        icon = <FontAwesomeIcon icon={faFacebookF} />;
-        break;
-      }
-      case "twitter": {
-        icon = <FontAwesomeIcon icon={faTwitter} />;
-        break;
-      }
-      case "linkedin":
-        icon = <FontAwesomeIcon icon={faLinkedin} />;
-        break;
-      case "youtube":
-        icon = <FontAwesomeIcon icon={faYoutube} />;
-        break;
-      case "twitch":
-        icon = <FontAwesomeIcon icon={faTwitch} />;
-        break;
-      case "instagram":
-        icon = <FontAwesomeIcon icon={faInstagram} />;
-        break;
-      case "skype":
-        <FontAwesomeIcon icon={faSkype} />;
-        break;
-      case "phone":
-        <FontAwesomeIcon icon={faPhoneAlt} />;
-        break;
-      case "email":
-        icon = <FontAwesomeIcon icon={faEnvelope} />;
-        break;
-      default:
-        icon = <FontAwesomeIcon icon={faLink} />;
-        break;
-    }
-    return icon;
-  };
-
+const RateMember = ({ data }) => {
   return (
     <>
       <div className="member-item">
@@ -159,33 +114,45 @@ const Member = ({ data }) => {
             JSON.parse(data.links).map((link) => (
               <>
                 <a
-                  href={
-                    link.name.toLowerCase() === "phone"
-                      ? "callto:" + link.link
-                      : link.name.toLowerCase() === "email"
-                      ? "mailto:" + link.link
-                      : link.link
-                  }
+                  href={link.link}
                   target="_blank"
                   className="member-contact-item"
                 >
-                  {contactRender(link)}
+                  {link.name.toLowerCase() == "facebook" && (
+                    <FontAwesomeIcon icon={faFacebookF} />
+                  )}
+                  {link.name.toLowerCase() == "twitter" && (
+                    <FontAwesomeIcon icon={faTwitter} />
+                  )}
+                  {link.name.toLowerCase() == "instagram" && (
+                    <FontAwesomeIcon icon={faInstagram} />
+                  )}
+                  {link.name.toLowerCase() == "youtube" && (
+                    <FontAwesomeIcon icon={faYoutube} />
+                  )}
+                  {link.name.toLowerCase() == "twitch" && (
+                    <FontAwesomeIcon icon={faTwitch} />
+                  )}
+                  {link.name.toLowerCase() == "linkedin" && (
+                    <FontAwesomeIcon icon={faLinkedin} />
+                  )}
+                  {link.name.toLowerCase() == "skype" && (
+                    <FontAwesomeIcon icon={faSkype} />
+                  )}
+                  {link.name.toLowerCase() == "website" && (
+                    <FontAwesomeIcon icon={faLink} />
+                  )}
                 </a>
               </>
             ))}
         </div>
-        <div className="member-categories">
-          <span> Салбар </span>
-          <div className="cat-list">
-            {data.category &&
-              data.category.map((cat) => (
-                <div className="info-cat-item">{cat.name}</div>
-              ))}
-          </div>
+        <div className="ratingCount">
+          <h6>{data.ratingCount}</h6>
+          <span>Хүн үнэлгээ өгсөн</span>
         </div>
       </div>
     </>
   );
 };
 
-export default Member;
+export default RateMember;
