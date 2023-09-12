@@ -39,9 +39,7 @@ export default function Page({ params }) {
   const handleRate = async () => {
     const isRate = cookies[params.id];
 
-    if (isRate == "true") {
-      toastControl("error", "Нэг төхөөрөмжөөс нэг удаа санал өгөх боломжтой");
-    } else if (!rate) {
+    if (!rate) {
       toastControl("error", "Үнэлгээ өгнө үү");
     } else if (!phoneNumber) {
       toastControl("error", "Утасны дугаараа оруулна уу");
@@ -51,8 +49,14 @@ export default function Page({ params }) {
       const data = { phoneNumber, rate, member: params.id };
       const { error, result } = await postRate(data);
       if (result) {
-        toastControl("success", "Үнэлгээг хүлээн авлаа.");
-        setCookie(params.id, true);
+        toastControl("success", `Үнэлгээг хүлээн авлаа. `);
+        var now = new Date();
+        var time = now.getTime();
+        var expireTime = time + 1000 * 36000;
+        now.setTime(expireTime);
+
+        // setCookie(params.id, true, [{ expires: "2024-09-24T04:49:03.404Z" }]);
+        window.location.replace(`/members/${params.id}`);
       }
       if (error) {
         toastControl("error", "Та өмнө үнэлгээ өгсөн байна.");

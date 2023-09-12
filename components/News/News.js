@@ -16,7 +16,7 @@ const News = ({ data }) => {
       </Link>
       <div className="service-col-content">
         <Link href={`/news/${data._id}`} className="col-service-title">
-          {data.name}
+          {data.name.length > 43 ? data.name + "..." : data.name}
         </Link>
         <p>
           {htmlToText(data.details, {

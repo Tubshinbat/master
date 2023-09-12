@@ -267,6 +267,32 @@ const MemberDetials = ({ data, alternativeMembers }) => {
               </div>
             </div>
           )}
+          <div className="profile-details">
+            <div className="profile-head">
+              <h6> Хаяг </h6>
+            </div>
+            <div
+              style={{
+                height: "400px",
+                width: "100%",
+                padding: "10px",
+                boxShadow: "0px 0px 15px rgb(0 0 0 / 8%)",
+              }}
+            >
+              <GoogleMapReact
+                bootstrapURLKeys={{
+                  key: "AIzaSyBVbaukknpuyvHnYSK_MmpI-5pcBwz83kw",
+                }}
+                defaultZoom={16}
+                defaultCenter={{
+                  lat: data.lat,
+                  lng: data.long,
+                }}
+              >
+                <AnyReactComponent lat={data.lat} lng={data.long} />
+              </GoogleMapReact>
+            </div>
+          </div>
         </div>
       </div>
     </>
