@@ -1,11 +1,11 @@
 {
-  "name": "dent-front",
+  "name": "master-front",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 1004",
+    "start": "next start -p 2003",
     "lint": "next lint"
   },
   "dependencies": {
