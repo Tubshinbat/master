@@ -22,6 +22,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import RateColMember from "./RateColMember";
+import { Wrapper } from "@googlemaps/react-wrapper";
 
 const PartnerDetails = ({ data, members }) => {
   const AnyReactComponent = ({ text }) => <div>{text}</div>;
@@ -141,18 +142,9 @@ const PartnerDetails = ({ data, members }) => {
                   boxShadow: "0px 0px 15px rgb(0 0 0 / 8%)",
                 }}
               >
-                <GoogleMapReact
-                  bootstrapURLKeys={{
-                    key: "AIzaSyBVbaukknpuyvHnYSK_MmpI-5pcBwz83kw",
-                  }}
-                  defaultZoom={16}
-                  defaultCenter={{
-                    lat: data.lat,
-                    lng: data.long,
-                  }}
-                >
-                  <AnyReactComponent lat={data.lat} lng={data.long} />
-                </GoogleMapReact>
+                <Wrapper apiKey={"AIzaSyBVbaukknpuyvHnYSK_MmpI-5pcBwz83kw"}>
+                  <Map latitude={data.lat} longitude={data.long}></Map>
+                </Wrapper>
               </div>
             </div>
           </div>
@@ -166,5 +158,31 @@ const PartnerDetails = ({ data, members }) => {
     </>
   );
 };
+
+const Map = ({ latitude, longitude, children }) => {
+  const ref = useRef(null);
+  const [map, setMap] = useState(google.maps.Maps || null);
+
+  useEffect(() => {
+    if (ref.current && !map) {
+      setMap(
+        new google.maps.Map(ref.current, {
+          zoomControl: true,
+          mapTypeControl: false,
+          streetViewControl: true,
+          center: {
+            lat: latitude ?? 0,
+            lng: longitude ?? 0,
+          },
+          zoom: 13,
+        })
+      );
+    }
+  }, [ref, map, latitude, longitude]);
+
+  const marker = new google.maps.Marker({
+    position: { lat: latitude, lng: longitude },
+    map: map,
+  });
 
 export default PartnerDetails;
