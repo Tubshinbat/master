@@ -20,7 +20,7 @@ import GoogleMapReact from "google-map-react";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import RateColMember from "./RateColMember";
 import { Wrapper } from "@googlemaps/react-wrapper";
 
