@@ -1,4 +1,3 @@
-"use client";
 import {
   faSkype,
   faTwitch,
@@ -16,15 +15,13 @@ import {
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import QRCode from "react-qr-code";
-import { Wrapper } from "@googlemaps/react-wrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
 const MemberDetials = ({ data, alternativeMembers }) => {
-  const AnyReactComponent = ({ text }) => <div>{text}</div>;
   const contactRender = (link) => {
     let icon = <FontAwesomeIcon icon={faLink} />;
 
@@ -270,58 +267,8 @@ const MemberDetials = ({ data, alternativeMembers }) => {
               </div>
             </div>
           )}
-          <div className="profile-details">
-            <div className="profile-head">
-              <h6> Хаяг </h6>
-            </div>
-            <div
-              style={{
-                height: "400px",
-                width: "100%",
-                padding: "10px",
-                boxShadow: "0px 0px 15px rgb(0 0 0 / 8%)",
-              }}
-            >
-              <Wrapper apiKey={"AIzaSyBVbaukknpuyvHnYSK_MmpI-5pcBwz83kw"}>
-                <Map latitude={data.lat} longitude={data.long}></Map>
-              </Wrapper>
-            </div>
-          </div>
         </div>
       </div>
-    </>
-  );
-};
-
-const Map = ({ latitude, longitude, children }) => {
-  const ref = useRef(null);
-  const [map, setMap] = useState(google.maps.Maps || null);
-
-  useEffect(() => {
-    if (ref.current && !map) {
-      setMap(
-        new google.maps.Map(ref.current, {
-          zoomControl: true,
-          mapTypeControl: false,
-          streetViewControl: true,
-          center: {
-            lat: latitude ?? 0,
-            lng: longitude ?? 0,
-          },
-          zoom: 13,
-        })
-      );
-    }
-  }, [ref, map, latitude, longitude]);
-
-  const marker = new google.maps.Marker({
-    position: { lat: latitude, lng: longitude },
-    map: map,
-  });
-
-  return (
-    <>
-      <div ref={ref} style={{ height: "100%", width: "100%" }} />
     </>
   );
 };
