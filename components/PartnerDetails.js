@@ -16,7 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import QRCode from "react-qr-code";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import GoogleMapReact from "google-map-react";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +24,7 @@ import { useEffect } from "react";
 import RateColMember from "./RateColMember";
 
 const PartnerDetails = ({ data, members }) => {
+  const AnyReactComponent = ({ text }) => <div>{text}</div>;
   const contactRender = (link) => {
     let icon = <FontAwesomeIcon icon={faLink} />;
 

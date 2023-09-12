@@ -16,12 +16,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import QRCode from "react-qr-code";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import GoogleMapReact from "google-map-react";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
 
 const MemberDetials = ({ data, alternativeMembers }) => {
+  const AnyReactComponent = ({ text }) => <div>{text}</div>;
   const contactRender = (link) => {
     let icon = <FontAwesomeIcon icon={faLink} />;
 
