@@ -1,3 +1,4 @@
+"use client";
 import {
   faSkype,
   faTwitch,
@@ -20,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const MemberDetials = ({ data, alternativeMembers }) => {
   const AnyReactComponent = ({ text }) => <div>{text}</div>;
