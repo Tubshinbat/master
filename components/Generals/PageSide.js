@@ -1,4 +1,6 @@
 "use client";
+import { faArrowDown, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Tree } from "antd";
 import { getMemberCategories } from "lib/getFetchers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -26,6 +28,7 @@ const PageSide = ({ slug = "/" }) => {
   const [data, setData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [checkedKeys, setCheckedKeys] = useState([]);
+  const [showIs, setShowIs] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
   const onExpand = (expandedKeysValue) => {
@@ -90,6 +93,21 @@ const PageSide = ({ slug = "/" }) => {
         <div className="side">
           <div className="side-header">
             <h4> Ангилал </h4>
+            <span
+              onClick={() => setShowIs((sb) => (sb === true ? false : true))}
+            >
+              {showIs == true ? (
+                <FontAwesomeIcon icon={faArrowDown} />
+              ) : (
+                <FontAwesomeIcon icon={faArrowRight} />
+              )}
+            </span>
+          </div>
+          <div
+            className={`side-content ${
+              showIs == false ? "displayNone" : "displayOn"
+            }`}
+          >
             <Tree
               defaultExpandAll
               checkable
