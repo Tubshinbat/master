@@ -3,7 +3,7 @@ import { getIdNews } from "lib/getFetchers";
 
 export async function generateMetadata({ params }) {
   const { news } = await getIdNews(params.id);
-  let title = `"Шилдэг мастер” сургалт, судалгаа, үйлчилгээний төв `;
+  let title = `"Шилдэг мастер” сургалт, судалгаа, үнэлгээний төв `;
 
   if (news) {
     title = news.name + " - " + title;

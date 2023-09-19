@@ -12,8 +12,8 @@ import Loader from "components/Generals/Loader";
 import { ToastContainer } from "react-toastify";
 
 export const metadata = {
-  title: `"Шилдэг мастер” сургалт, судалгаа, үйлчилгээний төв `,
-  description: `"Шилдэг мастер” сургалт, судалгаа, үйлчилгээний төв`,
+  title: `"Шилдэг мастер” сургалт, судалгаа, үнэлгээний төв `,
+  description: `"Шилдэг мастер” сургалт, судалгаа, үнэлгээний төв`,
 };
 
 export default function RootLayout({ children }) {

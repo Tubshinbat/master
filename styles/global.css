@@ -758,6 +758,10 @@ section {
   border-bottom: 2px solid rgb(241, 241, 241);
 }
 
+.profile-detail img{
+  height: auto !important;
+}
+
 .profile-categories {
   display: flex;
   flex-direction: row;
