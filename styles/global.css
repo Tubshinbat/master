@@ -371,6 +371,12 @@ section {
 /* -------------------------------
 -------------- NEws  ------------
 ------------------------------- */
+.translate-google{
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
 .service-col-img {
   margin-bottom: 10px;
   width: 100%;
