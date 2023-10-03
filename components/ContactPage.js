@@ -12,10 +12,32 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const ContactPage = ({ webInfo }) => {
+  const googleTranslateElementInit = () => {
+    new window.google.translate.TranslateElement(
+      {
+        pageLanguage: "en",
+        autoDisplay: false,
+      },
+      "google_translate_element"
+    );
+  };
+  useEffect(() => {
+    var addScript = document.createElement("script");
+    addScript.setAttribute(
+      "src",
+      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+    );
+    document.body.appendChild(addScript);
+    window.googleTranslateElementInit = googleTranslateElementInit;
+  }, []);
+
   return (
     <>
       <section className="section ">
         <div className="container">
+          <div className="translate-google">
+            <div id="google_translate_element"></div>
+          </div>
           <div className="row">
             <div className="col-lg-12">
               <div className="row contactInfos ">

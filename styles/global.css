@@ -376,6 +376,7 @@ section {
   width: 100%;
   align-items: flex-end;
   justify-content: flex-end;
+  margin-bottom: 15px;
 }
 .service-col-img {
   margin-bottom: 10px;
