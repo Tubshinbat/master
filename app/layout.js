@@ -1,4 +1,3 @@
-"use client";
 import "bootstrap/dist/css/bootstrap.css";
 import "styles/global.css";
 import "react-toastify/dist/ReactToastify.css";
