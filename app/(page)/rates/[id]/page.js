@@ -18,6 +18,7 @@ export default function Page({ params }) {
   const [loading, setLoading] = useState(true);
   const [rate, setRate] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState();
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +36,7 @@ export default function Page({ params }) {
       setPhoneNumber(e.target.value);
     }
   };
+  const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
   const handleRate = async () => {
     const isRate = cookies[params.id];
@@ -49,12 +51,13 @@ export default function Page({ params }) {
       const data = { phoneNumber, rate, member: params.id };
       const { error, result } = await postRate(data);
       if (result) {
-        toastControl("success", `Үнэлгээг хүлээн авлаа. `);
+        // toastControl("success", `Үнэлгээг хүлээн авлаа. `);
         var now = new Date();
         var time = now.getTime();
         var expireTime = time + 1000 * 36000;
         now.setTime(expireTime);
-
+        setShow(true);
+        await timer(1000 * 7);
         // setCookie(params.id, true, [{ expires: "2024-09-24T04:49:03.404Z" }]);
         window.location.replace(`/members/${params.id}`);
       }
@@ -96,6 +99,15 @@ export default function Page({ params }) {
   return (
     <>
       <Suspense fallback={<Loader />}>
+        <div className={`fireworkBg ${show === false && "displayNone"}`}>
+          <div class="firework"></div>
+          <div class="firework"></div>
+          <div class="firework"></div>
+          <div className="firework-text">
+            <h4>Үнэлгээ илгээсэнд баярлалаа</h4>
+            <p> Тун удахгүй тухайн хуудаснаас шилжих болно</p>
+          </div>
+        </div>
         <div className="main">
           <section>
             <div className="container">
