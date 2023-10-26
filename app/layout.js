@@ -19,6 +19,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <Script src="/js/scripts.js" />
       <body>
         <Suspense fallback={<Loader />}>
           <Header />

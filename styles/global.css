@@ -368,6 +368,26 @@ section {
   filter: grayscale(0%);
 }
 
+
+.z-10086 {
+  z-index: 10086;
+}
+
+.-top-6 {
+  top: -6rem;
+}
+.emitter{
+    position: relative;
+}
+.emitter div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  background: var(--particle-color);
+}
+
 /* -------------------------------
 -------------- NEws  ------------
 ------------------------------- */

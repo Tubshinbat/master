@@ -97,6 +97,22 @@ export default function Page({ params }) {
     <>
       <Suspense fallback={<Loader />}>
         <div className="main">
+          <div>
+            <div className="backdrop" />
+            <div className="dialog w-70 text-center">
+              <div className="relative z-10086 flex justify-between w-full space-x-12">
+                <div className="emitter order-1" />
+                <div className="emitter order-3" />
+                <div className="emitter order-2 -top-6" />
+              </div>
+              <div className="text-lg font-bold">Congratulations!</div>
+              <div className="mt-4">You win the game!</div>
+              <button className="mt-4 btn btn-primary" onclick="start();">
+                Again
+              </button>
+            </div>
+          </div>
+
           <section>
             <div className="container">
               <div className="translate-google">
@@ -228,7 +244,6 @@ export default function Page({ params }) {
                         </div>
                       </div>
                       <button className="rating-btn" onClick={handleRate}>
-                        {" "}
                         Үнэлгээ өгөх{" "}
                       </button>
                     </div>

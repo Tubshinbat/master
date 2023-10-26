@@ -16,7 +16,6 @@ const RateMembers = ({ plusQuery = "plus=none" }) => {
     const fetchData = async () => {
       const { members } = await getRateMembers(`${plusQuery}`);
       if (members) setData(members);
-
       setLoading(false);
     };
 
