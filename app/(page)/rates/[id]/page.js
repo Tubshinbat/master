@@ -107,7 +107,7 @@ export default function Page({ params }) {
               </div>
               <div className="text-lg font-bold">Congratulations!</div>
               <div className="mt-4">You win the game!</div>
-              <button className="mt-4 btn btn-primary" onclick="start();">
+              <button className="mt-4 btn btn-primary" onClick="start()">
                 Again
               </button>
             </div>
