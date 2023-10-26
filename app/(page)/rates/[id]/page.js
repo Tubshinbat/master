@@ -10,6 +10,7 @@ import { toastControl } from "lib/toastControl";
 import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import gsap from "gsap";
 
 export default function Page({ params }) {
   const [data, setData] = useState(null);
@@ -83,7 +84,7 @@ export default function Page({ params }) {
     window.googleTranslateElementInit = googleTranslateElementInit;
   }, []);
 
-  // gsap.registerPlugin(Physics2DPlugin);
+  gsap.registerPlugin(Physics2DPlugin);
   const emitters = document.querySelectorAll(".emitter");
   const turn = 360;
   const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
