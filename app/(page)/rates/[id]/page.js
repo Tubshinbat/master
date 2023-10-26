@@ -10,8 +10,8 @@ import { toastControl } from "lib/toastControl";
 import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import gsap from "gsap";
-import Physics2DPlugin from "gsap/Physics2DPlugin";
+import { gsap } from "gsap";
+import { Physics2DPlugin } from "gsap/Physics2DPlugin";
 
 export default function Page({ params }) {
   const [data, setData] = useState(null);
