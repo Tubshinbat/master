@@ -10,8 +10,6 @@ import { toastControl } from "lib/toastControl";
 import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { gsap } from "gsap";
-import { Physics2DPlugin } from "gsap/Physics2DPlugin";
 
 export default function Page({ params }) {
   const [data, setData] = useState(null);
@@ -85,80 +83,6 @@ export default function Page({ params }) {
     window.googleTranslateElementInit = googleTranslateElementInit;
   }, []);
 
-  gsap.registerPlugin(Physics2DPlugin);
-  const emitters = document.querySelectorAll(".emitter");
-  const turn = 360;
-  const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
-  const makeParticles = (
-    emitter,
-    quantity,
-    x,
-    y,
-    minAngle,
-    maxAngle,
-    minVelocity,
-    maxVelocity,
-    gravity
-  ) => {
-    let colors = ["#4ec0e9", "#ffce52", "#ed5464", "#8e44ad", "#2ecc71"];
-    for (let i = quantity - 1; i >= 0; i--) {
-      const angle = gsap.utils.random(minAngle, maxAngle);
-      const velocity = gsap.utils.random(minVelocity, maxVelocity);
-      const particle = document.createElement("div");
-      particle.style.setProperty("--particle-color", sample(colors));
-      emitter.appendChild(particle);
-      gsap.set(particle, {
-        opacity: 0,
-        scale: gsap.utils.random(0.3, 0.8),
-        x,
-        y,
-      });
-      const t1 = gsap.timeline({
-        onComplete() {
-          particle.remove();
-        },
-      });
-      t1.to(
-        particle,
-        {
-          opacity: 1,
-          duration: 0.05,
-        },
-        0
-      )
-        .to(
-          particle,
-          {
-            rotationX: `+=${gsap.utils.random(2 * turn, 4 * turn)}`,
-            rotationZ: `+=${gsap.utils.random(2 * turn, 4 * turn)}`,
-            physics2D: {
-              angle,
-              velocity,
-              gravity,
-            },
-            duration: 2,
-          },
-          0
-        )
-        .to(
-          particle,
-          {
-            opacity: 0,
-            duration: 1,
-          },
-          0.8
-        );
-    }
-  };
-
-  const start = async () => {
-    for (const emitter of emitters) {
-      makeParticles(emitter, 100, -4, 6, 0, 360, 60, 120, 60);
-      await sleep(500);
-    }
-  };
-
   if (!data && loading) {
     return (
       <section>
@@ -173,22 +97,6 @@ export default function Page({ params }) {
     <>
       <Suspense fallback={<Loader />}>
         <div className="main">
-          <div>
-            <div className="backdrop" />
-            <div className="dialog w-70 text-center">
-              <div className="relative z-10086 flex justify-between w-full space-x-12">
-                <div className="emitter order-1" />
-                <div className="emitter order-3" />
-                <div className="emitter order-2 -top-6" />
-              </div>
-              <div className="text-lg font-bold">Congratulations!</div>
-              <div className="mt-4">You win the game!</div>
-              <button className="mt-4 btn btn-primary" onClick={start()}>
-                Again
-              </button>
-            </div>
-          </div>
-
           <section>
             <div className="container">
               <div className="translate-google">
