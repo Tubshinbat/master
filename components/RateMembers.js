@@ -82,7 +82,7 @@ const RateMembers = ({ plusQuery = "plus=none" }) => {
                     className="col-lg-4 col-md-4 col-sm-6 col-12"
                     key={el._id}
                   >
-                    <RateMember data={el} />
+                    <RateMember data={el} number={index + 1} />
                   </div>
                 )
             )}

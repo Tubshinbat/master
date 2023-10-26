@@ -14,10 +14,15 @@ import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
 
-const RateMember = ({ data }) => {
+const RateMember = ({ data, number }) => {
   return (
     <>
-      <div className="member-item">
+      <div className={`member-item win-${number}`}>
+        {number <= 3 && (
+          <>
+            <div className="number-win"> #{number}</div>
+          </>
+        )}
         <div className="member-head">
           <Link href={`/members/${data._id}`} className="member-img-box">
             <Image

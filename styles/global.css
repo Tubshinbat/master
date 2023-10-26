@@ -555,6 +555,37 @@ section {
   font-size: 12px;
 }
 
+.win-1{
+  position: relative;
+  background: rgb(251, 251, 251);
+    background: linear-gradient(207deg, rgba(251, 251, 251, 1) 0%, rgba(251, 247, 186, 0.705) 50%, rgba(255, 255, 255, 1) 100%);
+    border:1px solid rgba(246, 179, 78, 0.048)
+}
+
+.win-2 {
+  position: relative;
+  background: rgb(251, 251, 251);
+  background: linear-gradient(207deg, rgba(251, 251, 251, 1) 0%, rgba(197, 198, 242, 0.692) 50%, rgba(255, 255, 255, 1) 100%);
+  border: 1px solid rgba(107, 134, 255, 0.041)
+}
+
+.win-3 {
+  position: relative;
+  background: rgb(251, 251, 251);
+  background: linear-gradient(207deg, rgba(251, 251, 251, 1) 0%, rgba(227, 214, 162, 0.473) 50%, rgba(255, 255, 255, 1) 100%);
+  border: 1px solid rgba(107, 134, 255, 0.055)
+}
+
+.number-win{
+  position: absolute;
+  bottom: 30px;
+  right: 40px;
+  font-size: 50px;
+  font-weight: bold;
+  color:rgba(0, 0, 0, 0.082);
+  font-style: italic;
+}
+
 .cat-list {
   display: flex;
   flex-direction: row;

@@ -104,7 +104,7 @@ export default function Page({ params }) {
           <div class="firework"></div>
           <div class="firework"></div>
           <div className="firework-text">
-            <h4>Үнэлгээ илгээсэнд баярлалаа</h4>
+            <h4>Үнэлгээ өгсөнд баярлалаа</h4>
             <p> Тун удахгүй тухайн хуудаснаас шилжих болно</p>
           </div>
         </div>
