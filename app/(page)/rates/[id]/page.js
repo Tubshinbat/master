@@ -119,12 +119,8 @@ export default function Page({ params }) {
                   <div className="member-profile-side rating-box">
                     <div className="profile-picture-box">
                       {data.picture && (
-                        <Image
+                        <img
                           className="profile-img"
-                          width="0"
-                          height="0"
-                          sizes="100vw"
-                          quality="100"
                           src={`${base.cdnUrl}/350x350/${data.picture}`}
                         />
                       )}

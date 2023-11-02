@@ -21,12 +21,8 @@ const RateColMember = ({ data }) => {
         <div className="member-col-left">
           <div className="member-col-head">
             <div className="member-col-img-box">
-              <Image
+              <img
                 className="member-img"
-                width="0"
-                height="0"
-                sizes="100vw"
-                quality="100"
                 src={`${base.cdnUrl}/350x350/${data.picture}`}
               />
             </div>

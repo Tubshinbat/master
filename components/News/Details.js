@@ -15,12 +15,8 @@ const NewsDetails = ({ data }) => {
       </div>
       <div className="news-main-img-box">
         {data.pictures && data.pictures[0] && (
-          <Image
+          <img
             className="news-img"
-            width="0"
-            height="0"
-            sizes="100vw"
-            quality="100"
             src={`${base.cdnUrl}/${data.pictures[0]}`}
           />
         )}

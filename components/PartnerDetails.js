@@ -70,12 +70,8 @@ const PartnerDetails = ({ data, members }) => {
           <div className="member-profile-side">
             <div className="profile-logo-box">
               {data.logo && (
-                <Image
+                <img
                   className="profile-logo-img"
-                  width="0"
-                  height="0"
-                  sizes="100vw"
-                  quality="100"
                   src={`${base.cdnUrl}/450/${data.logo}`}
                 />
               )}

@@ -65,12 +65,8 @@ const Member = ({ data }) => {
       <div className="member-item">
         <div className="member-head">
           <Link href={`/members/${data._id}`} className="member-img-box">
-            <Image
+            <img
               className="member-img"
-              width="0"
-              height="0"
-              sizes="100vw"
-              quality="100"
               src={`${base.cdnUrl}/350x350/${data.picture}`}
             />
           </Link>

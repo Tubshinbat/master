@@ -68,12 +68,8 @@ const MemberDetials = ({ data, alternativeMembers }) => {
           <div className="member-profile-side">
             <div className="profile-picture-box">
               {data.picture && (
-                <Image
+                <img
                   className="profile-img"
-                  width="0"
-                  height="0"
-                  sizes="100vw"
-                  quality="100"
                   src={`${base.cdnUrl}/350x350/${data.picture}`}
                 />
               )}
@@ -216,12 +212,8 @@ const MemberDetials = ({ data, alternativeMembers }) => {
                 alternativeMembers.map((member) => (
                   <div className="alternative-member">
                     <Link href={`/members/${member._id}`}>
-                      <Image
+                      <img
                         className="alternative-img"
-                        width="0"
-                        height="0"
-                        sizes="100vw"
-                        quality="100"
                         src={`${base.cdnUrl}/150x150/${member.picture}`}
                       />
                     </Link>

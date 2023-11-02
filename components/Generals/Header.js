@@ -36,12 +36,8 @@ const Header = () => {
           <div className="header-logo">
             {info && (
               <Link href="/">
-                <Image
+                <img
                   src={`${base.cdnUrl}/${info.logo}`}
-                  width="0"
-                  height="0"
-                  sizes="100vw"
-                  quality="100"
                   className="logo-image"
                 />
               </Link>
