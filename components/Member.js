@@ -69,7 +69,9 @@ const Member = ({ data }) => {
               className="member-img"
               src={`${base.cdnUrl}/350x350/${data.picture}`}
             />
-            <img className="verfi-img" src="/images/verify.svg" />
+            {data.memberShip === true && (
+              <img className="verfi-img" src="/images/verify.svg" />
+            )}
           </Link>
           <div className="member-head-rigth">
             <div className="member-name">
