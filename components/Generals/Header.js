@@ -8,7 +8,7 @@ import { getWebInfo } from "lib/webinfo";
 import { getMenus, renderMenu } from "lib/menu";
 import MobileMenu from "./MobileMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUserAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const [info, setInfo] = useState(null);
@@ -43,9 +43,9 @@ const Header = () => {
               </Link>
             )}
           </div>
+          <ul className="header-menus">{renderMenu(menu)}</ul>
         </div>
         <div className="top-header-left">
-          <ul className="header-menus">{renderMenu(menu)}</ul>
           <form method="get" action="/search" className="search-box">
             <input
               className="search-input"
@@ -57,6 +57,9 @@ const Header = () => {
             </button>
           </form>
           <MobileMenu menus={menu} info={info} />
+          <Link href="/login" className="user-header-btn">
+            <FontAwesomeIcon icon={faUserAlt} />
+          </Link>
         </div>
       </div>
     </header>
