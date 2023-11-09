@@ -18,26 +18,18 @@ import { redirect } from "next/navigation";
 import { useNotificationContext } from "context/notificationContext";
 
 export default function Page() {
-  const { loginUser, user } = useAuthContext();
-  const { contentLoad } = useNotificationContext();
+  const { loginUser, user, memberCheck } = useAuthContext();
+  const { contentLoad, setContentLoad } = useNotificationContext();
+
+  useEffect(() => {
+    setContentLoad(false);
+  }, []);
 
   const onFinishFailed = (errorInfo) => {};
 
   const onFinish = async (values) => {
-    // await loginUser(values);
+    await loginUser(values);
   };
-
-  useEffect(() => {
-    if (user) {
-      redirect("/userprofile");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      redirect("/userprofile");
-    }
-  }, [user]);
 
   return (
     <>
@@ -57,19 +49,19 @@ export default function Page() {
               autoComplete="off"
             >
               <Form.Item
-                name="phoneNumber"
+                name="email"
                 rules={[
                   {
                     required: true,
-                    message: "Та өөрийн бүртгэлтэй утасны дугаараа оруулна уу!",
+                    message: "Та өөрийн бүртгэлтэй имэйл хаягаа оруулна уу!",
                   },
                 ]}
                 className="loginInput"
               >
-                <InputNumber
+                <Input
                   size="large"
                   style={{ width: "100%", borderRadius: "2px" }}
-                  placeholder="Та утасны дугаараа оруулна уу"
+                  placeholder="Та имэйл хаягаа оруулна уу"
                   prefix={<UserOutlined />}
                 />
               </Form.Item>
@@ -89,6 +81,7 @@ export default function Page() {
                   prefix={<KeyOutlined />}
                 />
               </Form.Item>
+
               <Form.Item className="login-btn-box">
                 <Button
                   size="large"
@@ -100,7 +93,7 @@ export default function Page() {
                 </Button>
               </Form.Item>
               <div className="login-page-register">
-                Нууц үгээ мартсан бол <Link href="/forget"> энд дарна </Link> уу
+                Мартсан? <Link href="/forget"> Нууц үг сэргээх </Link>
               </div>
               <Form.Item>
                 <Link href="/register">

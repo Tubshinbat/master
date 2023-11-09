@@ -7,32 +7,32 @@ import { redirect } from "next/navigation";
 import { useNotificationContext } from "context/notificationContext";
 
 export default function Page() {
-  const { userRegister } = useAuthContext();
+  const { userRegister, setIsRedirect, isRedirect } = useAuthContext();
   const { contentLoad } = useNotificationContext();
 
   useEffect(() => {
     return () => {
-      // setIsRedirect(false);
+      setIsRedirect(false);
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (isRedirect === true) redirect("/login");
-  // }, [isRedirect]);
+  useEffect(() => {
+    if (isRedirect === true) redirect("/login");
+  }, [isRedirect]);
 
   const onFinishFailed = (errorInfo) => {
-    // toastControl("error", errorInfo);
+    toastControl("error", errorInfo);
   };
 
   const onFinish = async (values) => {
-    // await userRegister(values);
+    await userRegister(values);
   };
 
   return (
     <>
       <section>
         <div className="container">
-          <img src="/images/img-4.svg" className="shap-1" />
+          <img src="/images/img-1.svg" className="shap-2" />
           <div className="login_page">
             <h4> Бүртгүүлэх </h4>
             <Form
@@ -61,7 +61,7 @@ export default function Page() {
               </Form.Item>
 
               <Form.Item
-                name="firstName"
+                name="username"
                 rules={[
                   {
                     required: true,
@@ -108,20 +108,6 @@ export default function Page() {
                 />
               </Form.Item>
 
-              <Form.Item
-                name="gender"
-                rules={[
-                  {
-                    required: true,
-                    message: "Хүйсээ сонгоно уу!",
-                  },
-                ]}
-              >
-                <Radio.Group name="radiogroup" defaultValue="female">
-                  <Radio value="male">Эрэгтэй</Radio>
-                  <Radio value="female">Эмэгтэй</Radio>
-                </Radio.Group>
-              </Form.Item>
               <Form.Item
                 name="password"
                 rules={[
