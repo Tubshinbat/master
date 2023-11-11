@@ -61,7 +61,7 @@ export default function Page() {
               </Form.Item>
 
               <Form.Item
-                name="username"
+                name="name"
                 rules={[
                   {
                     required: true,

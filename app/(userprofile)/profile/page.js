@@ -1,20 +1,30 @@
 "use client";
-import { faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faUser, faUserAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loader from "components/Generals/Loader";
 import Side from "components/Userprofile/Side";
 import { useAuthContext } from "context/authContext";
 import { useNotificationContext } from "context/notificationContext";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Modal, Upload } from "antd";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import axios from "axios-base";
+import base from "lib/base";
+import { updateUser } from "lib/actionFetch";
+import Spinner from "components/Generals/Spinner";
 
 export default function RootLayout({ children }) {
-  const { user, checkUser } = useAuthContext();
-  const { contentLoad, setContentLoad } = useNotificationContext();
-  if (contentLoad)
+  const { user, loading } = useAuthContext();
+  const { contentLoad, setError, setAlert } = useNotificationContext();
+  const [imageUrl, setImageUrl] = useState();
+  const [open, setOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [loader, setLoader] = useState(false);
+
+  if (contentLoad || !user)
     return (
       <>
-        {" "}
         <section className="profile-section">
           <div className="container">
             <div className="row">
@@ -25,6 +35,65 @@ export default function RootLayout({ children }) {
       </>
     );
 
+  // Config
+  const uploadImage = async (options) => {
+    const { onSuccess, onError, file, onProgress } = options;
+    setLoader(true);
+    const fmData = new FormData();
+    const config = {
+      headers: { "content-type": "multipart/form-data" },
+      onUploadProgress: (event) => {
+        const percent = Math.floor((event.loaded / event.total) * 100);
+        setProgress(percent);
+        if (percent === 100) {
+          setTimeout(() => setProgress(0), 1000);
+        }
+        onProgress({ percent: (event.loaded / event.total) * 100 });
+      },
+    };
+
+    fmData.append("file", file);
+    try {
+      const res = await axios.post("/imgupload/memberupload", fmData, config);
+      const img = {
+        name: res.data.data,
+        url: `${base.cdnUrl}/${res.data.data}`,
+      };
+      await updateUser(user, { picture: img.name });
+      setImageUrl(img);
+      setAlert(res.data.data + " Хуулагдлаа");
+      setLoader(false);
+      return img;
+    } catch (err) {
+      setError(err);
+      setLoader(false);
+      return false;
+    }
+  };
+
+  const uploadOptions = {
+    onRemove: (file) => handleRemove("cover", file),
+    fileList: imageUrl && imageUrl.name && [imageUrl],
+    customRequest: (options) => uploadImage(options),
+    accept: "image/*",
+    name: "avatar",
+    listType: "picture",
+    maxCount: 1,
+  };
+
+  const uploadButton = (
+    <div className="upload-picture">
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div> Хуулах </div>
+    </div>
+  );
+
+  useEffect(() => {
+    if (user && user.picture) {
+      setImageUrl({ url: base.cdnUrl + "/350x350/" + user.picture });
+    }
+  }, [user]);
+
   return (
     <>
       <section className="profile-section">
@@ -34,46 +103,52 @@ export default function RootLayout({ children }) {
               <Side />
             </div>
             <div className="col-md-9">
-              <div className="profile-box">
-                {/* <h4> Хувийн мэдээлэл </h4>
-
+              <div className="user-box">
+                <h4> Хувийн мэдээлэл </h4>
                 <div className="userData-box">
                   <div className="row">
                     <div className="col-md-4">
-                      <div className="pro-box profile-info">
-                        <div className="profile">
-                          <div className="pic">
-                            {user && user.image ? (
-                              <img
-                                className="pic-img"
-                                src={base.cdnUrl + "/" + user.image}
-                              />
+                      <div className="pro-box user-info">
+                        <div className="user-profile">
+                          {loader && <Spinner />}
+                          <Upload
+                            {...uploadOptions}
+                            name="pciture"
+                            showUploadList={false}
+                            className="upload-list-inline"
+                          >
+                            {imageUrl ? (
+                              <img src={imageUrl.url} className="pic-img" />
                             ) : (
-                              <img
-                                className="pic-img"
-                                src="/images/no-avatar.jpeg"
-                              />
+                              uploadButton
                             )}
-                          </div>
-                          <p className="username"> {user && user.firstName} </p>
-                          <Link href="/userprofile/info"> Мэдээлэл засах </Link>
+                          </Upload>
                         </div>
+                        <p className="username">
+                          {user.lastName.substring(0, 1).toUpperCase() +
+                            "." +
+                            user.name.toUpperCase()}
+                        </p>
+                        <span> {user.email} </span>
                       </div>
                     </div>
                     <div className="col-md-8">
                       <div className="row">
                         <div className="col-md-6">
-                          <Link href="/userprofile/info">
-                            <div className="pro-box profile-details">
-                              <FontAwesomeIcon icon={faUser} />
+                          <Link href="/profile/info" className="user-dt-link">
+                            <div className="pro-box user-details">
+                              <FontAwesomeIcon icon={faUserAlt} />
                               <h6> Хувийн мэдээлэл </h6>
                               <span> Мэдээлэл засах </span>
                             </div>
                           </Link>
                         </div>
                         <div className="col-md-6">
-                          <Link href="/userprofile/password">
-                            <div className="pro-box  profile-details">
+                          <Link
+                            href="/profile/password"
+                            className="user-dt-link"
+                          >
+                            <div className="pro-box  user-details">
                               <FontAwesomeIcon icon={faLock} />
                               <h6> Нууц үг </h6>
                               <span> Шинэчлэх </span>
@@ -83,7 +158,7 @@ export default function RootLayout({ children }) {
                       </div>
                     </div>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isRedirect, setIsRedirect] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const memberCheck = (token) => {
     axios
@@ -129,6 +130,8 @@ export const AuthProvider = ({ children }) => {
         memberCheck,
         user,
         logOut,
+        loading,
+        setLoading,
       }}
     >
       {children}
