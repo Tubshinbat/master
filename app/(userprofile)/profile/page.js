@@ -125,11 +125,15 @@ export default function RootLayout({ children }) {
                           </Upload>
                         </div>
                         <p className="username">
-                          {user.lastName.substring(0, 1).toUpperCase() +
-                            "." +
+                          {user &&
+                            user.lastName &&
+                            user.lastName.substring(0, 1).toUpperCase() +
+                              "." +
+                              user &&
+                            user.name &&
                             user.name.toUpperCase()}
                         </p>
-                        <span> {user.email} </span>
+                        <span> {user && user.email} </span>
                       </div>
                     </div>
                     <div className="col-md-8">
