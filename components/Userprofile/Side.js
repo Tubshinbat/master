@@ -25,7 +25,8 @@ const Side = () => {
                 href="/profile"
                 className={`${
                   ("/profile" === pathname && "active") ||
-                  ("/profile/info" === pathname && "active")
+                  ("/profile/info" === pathname && "active") ||
+                  ("/profile/password" === pathname && "active")
                 }`}
               >
                 <div className="menu-icon">

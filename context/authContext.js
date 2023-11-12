@@ -129,6 +129,7 @@ export const AuthProvider = ({ children }) => {
         isRedirect,
         memberCheck,
         user,
+        setUser,
         logOut,
         loading,
         setLoading,

@@ -17,7 +17,7 @@ import { convertFromdata } from "lib/check";
 import Spinner from "components/Generals/Spinner";
 
 export default function RootLayout({ children }) {
-  const { user } = useAuthContext();
+  const { user, setUser } = useAuthContext();
   const { contentLoad, setError, setAlert } = useNotificationContext();
   const [partners, setPartners] = useState([]);
   const [open, setOpen] = useState(false);
@@ -44,7 +44,10 @@ export default function RootLayout({ children }) {
     if (user) {
       setLoading(true);
       try {
-        const result = await updateUser(user, sendData);
+        const { update } = await updateUser(user, sendData);
+        if (update.data.data) {
+          setUser({ ...update.data.data });
+        }
         setLoading(false);
         setAlert("Мэдээлэл амжилтай шинжлэгдлээ");
       } catch (error) {
