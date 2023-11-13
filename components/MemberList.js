@@ -15,9 +15,7 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
   useEffect(() => {
     const fetchData = async () => {
       const qry = queryBuild();
-      const { members, pagination } = await getMembers(
-        `status=true&${qry}&${plusQuery}`
-      );
+      const { members, pagination } = await getMembers(`${qry}&${plusQuery}`);
 
       if (members) setData(members);
 
