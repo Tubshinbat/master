@@ -1495,7 +1495,11 @@ footer a {
 .save-button:hover {
   color:#fff !important;
   border:none !important;
-  
+}
+
+.tableBox{
+  margin-top: 20px;
+  overflow-y: auto;
 }
 
 /* SPinner */

@@ -43,8 +43,8 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
-  const logOut = () => {
-    axios.get("members/logout").catch((error) => {});
+  const logOut = async () => {
+    await axios.get("members/logout").catch((error) => {});
     setUser(null);
     setIsPassword(false);
     setIsRedirect(false);
