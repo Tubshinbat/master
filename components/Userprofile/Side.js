@@ -84,7 +84,7 @@ const Side = () => {
 
             <li className="logout-item">
               <a
-                href="#"
+                href="/login"
                 onClick={() => {
                   logOut();
                   redirect("/login");
