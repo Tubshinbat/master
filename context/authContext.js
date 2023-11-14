@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNotificationContext } from "./notificationContext";
 import axios from "axios-base";
 import { useCookies } from "react-cookie";
+import { redirect } from "next/dist/server/api-utils";
 
 const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }) => {
     setIsPassword(false);
     setIsRedirect(false);
     removeCookie("nodetoken");
+    redirect("/login");
   };
 
   const loginUser = (data) => {
