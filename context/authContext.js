@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }) => {
     setIsPassword(false);
     setIsRedirect(false);
     removeCookie("nodetoken");
-    redirect("/login");
   };
 
   const loginUser = (data) => {

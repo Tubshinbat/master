@@ -3,14 +3,27 @@
 import Side from "components/Userprofile/Side";
 import { useAuthContext } from "context/authContext";
 import Spinner from "components/Generals/Spinner";
-import { Button, Modal, Input, Select, Table, Tag, Space, Tooltip } from "antd";
+import {
+  Button,
+  Modal,
+  Input,
+  Select,
+  Table,
+  Tag,
+  Space,
+  Tooltip,
+  Form,
+  InputNumber,
+} from "antd";
+import TextArea from "antd/lib/input/TextArea";
 import { SearchOutlined } from "@ant-design/icons";
 import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function RootLayout({ children }) {
   const { user } = useAuthContext();
+  const [form] = Form.useForm();
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -146,17 +159,15 @@ export default function RootLayout({ children }) {
     },
 
     {
-      key: "keyPassword",
-      title: "Нууц үг өөрчлөх",
+      key: "actions",
+      title: "Үйлдэлүүд",
       status: true,
       render: (text, record) => {
         return (
-          <button
-            className="changePasswordBtn"
-            onClick={() => changePasswrodModal(record.key)}
-          >
-            Нууц үг солих
-          </button>
+          <Button onClick={() => showModal("edit")}>
+            {" "}
+            <FontAwesomeIcon icon={faPencil} />
+          </Button>
         );
       },
     },
@@ -292,6 +303,11 @@ export default function RootLayout({ children }) {
     return query;
   };
 
+  const requiredRule = {
+    required: true,
+    message: "Тус талбарыг заавал бөглөнө үү",
+  };
+
   return (
     <>
       <section className="profile-section">
@@ -343,12 +359,76 @@ export default function RootLayout({ children }) {
             htmlType="submit"
             type="primary"
             // loading={loading.visible}
-            // onClick={() => setColumns(cloneColumns)}
+            onClick={() => {
+              form
+                .validateFields()
+                .then((values) => {})
+                .catch((info) => {
+                  // console.log(info);
+                });
+            }}
           >
             Хадгалах
           </Button>,
         ]}
-      ></Modal>
+      >
+        <Form layout="vertical" autoComplete="false" form={form}>
+          <div className="row">
+            <div className="col-lg-12">
+              <Form.Item
+                label="Компаний нэр"
+                name="companyName"
+                rules={[requiredRule]}
+              >
+                <Input placeholder="Компаний нэр оруулна уу" />
+              </Form.Item>
+            </div>
+            <div className="col-lg-12">
+              <Form.Item
+                label="Компаний товч танилцуулга"
+                name="about"
+                rules={[requiredRule]}
+              >
+                <TextArea
+                  placeholder="Товч танилцуулга"
+                  autoSize={{
+                    minRows: 2,
+                    maxRows: 6,
+                  }}
+                />
+              </Form.Item>
+            </div>
+            <div className="col-lg-12">
+              <Form.Item
+                label="Албан тушаал"
+                name="position"
+                rules={[requiredRule]}
+              >
+                <Input placeholder="Албан тушаалаа оруулна уу" />
+              </Form.Item>
+            </div>
+            <div className="col-lg-12">
+              <Form.Item
+                label="Ажилд орсон огноо"
+                name="startDate"
+                rules={[requiredRule]}
+                style={{ width: "100%" }}
+              >
+                <InputNumber placeholder="Ажилд орсон огноо оруулна уу" />
+              </Form.Item>
+            </div>
+            <div className="col-lg-12">
+              <Form.Item
+                label="Ажлаас гарсан огноо"
+                name="endDate"
+                rules={[requiredRule]}
+              >
+                <Input placeholder="Ажлаас гарсан огноо оруулна уу" />
+              </Form.Item>
+            </div>
+          </div>
+        </Form>
+      </Modal>
     </>
   );
 }
