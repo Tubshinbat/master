@@ -16,7 +16,7 @@ export default function Page({ params }) {
       const { partner } = await getPartner(params.id);
       if (partner) {
         const { members } = await getMembers(
-          `status=true&partner=${partner.name}&limit=100`
+          `&partner=${partner.name}&limit=100`
         );
         console.log(members);
         setMembers(members);
