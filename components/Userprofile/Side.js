@@ -10,7 +10,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuthContext } from "context/authContext";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 const Side = () => {
   const { logOut } = useAuthContext();
@@ -83,7 +83,13 @@ const Side = () => {
             </li>
 
             <li className="logout-item">
-              <a href="#" onClick={logOut}>
+              <a
+                href="#"
+                onClick={() => {
+                  logOut();
+                  redirect("/login");
+                }}
+              >
                 <div className="menu-icon">
                   <FontAwesomeIcon icon={faSignOut} />
                 </div>
