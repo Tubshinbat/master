@@ -9,8 +9,10 @@ import { getMenus, renderMenu } from "lib/menu";
 import MobileMenu from "./MobileMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import { useAuthContext } from "context/authContext";
 
 const Header = () => {
+  const { user } = useAuthContext();
   const [info, setInfo] = useState(null);
   const [menu, setMenu] = useState([]);
   const [phone, setPhone] = useState([]);
@@ -57,9 +59,15 @@ const Header = () => {
             </button>
           </form>
           <MobileMenu menus={menu} info={info} />
-          <Link href="/login" className="user-header-btn">
-            <FontAwesomeIcon icon={faUserAlt} />
-          </Link>
+          {!user ? (
+            <Link href="/login" className="user-header-btn">
+              <FontAwesomeIcon icon={faUserAlt} />
+            </Link>
+          ) : (
+            <Link href="/profile" className="user-header-btn">
+              <FontAwesomeIcon icon={faUserAlt} />
+            </Link>
+          )}
         </div>
       </div>
     </header>

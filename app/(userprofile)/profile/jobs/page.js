@@ -1,7 +1,10 @@
 "use client";
-
+import axios from "axios-base";
+import base from "lib/base";
 import Side from "components/Userprofile/Side";
 import { useAuthContext } from "context/authContext";
+import { useNotificationContext } from "context/notificationContext";
+import moment from "moment";
 import Spinner from "components/Generals/Spinner";
 import {
   Button,
@@ -14,24 +17,32 @@ import {
   Tooltip,
   Form,
   InputNumber,
+  Upload,
 } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { SearchOutlined } from "@ant-design/icons";
 import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { InboxOutlined } from "@ant-design/icons";
+import { getJob } from "lib/getFetchers";
+import { updateExperience } from "lib/actionFetch";
 
 export default function RootLayout({ children }) {
   const { user } = useAuthContext();
+  const { setAlert, setError } = useNotificationContext();
   const [form] = Form.useForm();
+  const { Dragger } = Upload;
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [selectData, setSelectData] = useState(null);
+  const [progress, setProgress] = useState(0);
   const [searchedColumn, setSearchedColumn] = useState("");
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const { Option } = Select;
+  const [imageUrl, setImageUrl] = useState();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [error, setError] = useState("");
 
   // -- FILTER STATE
   const [querys, setQuerys] = useState({});
@@ -128,7 +139,7 @@ export default function RootLayout({ children }) {
       key: "companyName",
       title: "Компаний нэр",
       status: true,
-      ...getColumnSearchProps("name"),
+      ...getColumnSearchProps("companyName"),
       sorter: (a, b) => handleSort(),
     },
 
@@ -141,9 +152,9 @@ export default function RootLayout({ children }) {
         return (
           <div className="table-image">
             {record.companyLogo ? (
-              <img src={`${base.cdnUrl}150x150/${record.companyLogo}`} />
+              <img src={`${base.cdnUrl}/150x150/${record.companyLogo}`} />
             ) : (
-              "Лого оруулаагүй байна"
+              "Логогүй"
             )}
           </div>
         );
@@ -159,15 +170,58 @@ export default function RootLayout({ children }) {
     },
 
     {
+      dataIndex: "startDate",
+      key: "startDate",
+      title: "Ажилд орсон огноо",
+      status: true,
+      ...getColumnSearchProps("startDate"),
+      sorter: (a, b) => handleSort(),
+    },
+
+    {
+      dataIndex: "endDate",
+      key: "endDate",
+      title: "Ажлаас гарсан огноо",
+      status: true,
+      ...getColumnSearchProps("endDate"),
+      sorter: (a, b) => handleSort(),
+    },
+
+    {
       key: "actions",
       title: "Үйлдэлүүд",
       status: true,
       render: (text, record) => {
         return (
-          <Button onClick={() => showModal("edit")}>
-            {" "}
-            <FontAwesomeIcon icon={faPencil} />
-          </Button>
+          <div className="action-btns">
+            <Tooltip title="Засах">
+              <button
+                className="action-btn-edit"
+                onClick={() => {
+                  showEdit(record.key);
+                  setVisible((sb) => ({ ...sb, title: "Шинэчлэх" }));
+                }}
+              >
+                <FontAwesomeIcon icon={faPencil} />
+              </button>
+            </Tooltip>
+            <Tooltip title="Устгах">
+              <button
+                className="action-btn-delete"
+                onClick={async () => {
+                  showModal("delete");
+                  const { experience } = await getJob(record.key);
+                  if (experience) {
+                    setSelectData(experience);
+                  }
+                  setEditId(record.key);
+                  setVisible((bs) => ({ ...bs, title: "Өгөгдөл устгах" }));
+                }}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </Tooltip>
+          </div>
         );
       },
     },
@@ -175,11 +229,35 @@ export default function RootLayout({ children }) {
 
   // QUERY CHANGES AND FEATCH DATA
   useEffect(() => {
-    if (querys) {
+    const fetchData = async () => {
+      setLoading(true);
       const query = queryBuild();
-      // props.loadPage(query);
+      const jobs = await axios.get(`experiences?${query}`);
+      jobs && jobs.data && appendData(jobs.data.data);
+      if (jobs.data && jobs.data.pagination) {
+        const total = jobs.data.pagination.total;
+        const pageSize = jobs.data.pagination.limit;
+
+        setTableParams((tbf) => ({
+          ...tbf,
+          pagination: { ...tbf.pagination, total, pageSize },
+        }));
+      }
+      setLoading(false);
+    };
+
+    if (querys) {
+      fetchData().catch((error) => console.log(error));
     }
   }, [querys]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await init();
+    };
+
+    fetchData().catch((error) => {});
+  }, []);
 
   useEffect(() => {
     const select = [];
@@ -187,19 +265,36 @@ export default function RootLayout({ children }) {
     setQuerys((bquery) => ({ ...bquery, select: select }));
   }, [filterdColumns]);
 
-  // useEffect(() => {
-  //   const total = props.pagination.total;
-  //   const pageSize = props.pagination.limit;
-
-  //   setTableParams((tbf) => ({
-  //     ...tbf,
-  //     pagination: { ...tbf.pagination, total, pageSize },
-  //   }));
-  // }, [props.pagination]);
-
   // -- INIT
-  const init = () => {
+  const init = async () => {
     const query = queryBuild();
+    setLoading(true);
+    const jobs = await axios.get(`/experiences?${query}`);
+    if (jobs.data && jobs.data.data) appendData(jobs.data.data);
+    setLoading(false);
+  };
+
+  const appendData = (result) => {
+    const refData = [];
+
+    result.map((el) => {
+      const key = el._id;
+
+      el.createAt = moment(el.createAt)
+        .utcOffset("+0800")
+        .format("YYYY-MM-DD HH:mm:ss");
+      el.updateAt = moment(el.updateAt)
+        .utcOffset("+0800")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      refData.push({
+        dataIndex: key,
+        key,
+        ...el,
+      });
+    });
+
+    setData(() => [...refData]);
   };
 
   // -- HANDLE FUNCTIONS
@@ -230,18 +325,10 @@ export default function RootLayout({ children }) {
 
   const handleCancel = () => {
     setVisible((sb) => Object.keys(sb).map((el) => (sb[el] = false)));
-    // clear();
+    clear();
   };
 
   // -- TABLE SELECTED AND CHANGE
-
-  const handleColumn = (e) => {
-    const newArr = [...cloneColumns];
-    const checkElmt = newArr.findIndex((col) => col.key == e.target.name);
-    const toggle = newArr[checkElmt].status === true ? false : true;
-    newArr[checkElmt] = { ...newArr[checkElmt], status: toggle };
-    const json_str = JSON.stringify(newArr);
-  };
 
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({
@@ -253,7 +340,7 @@ export default function RootLayout({ children }) {
     if (pagination) {
       setQuerys((bq) => ({
         ...bq,
-        pageNumber: pagination.current,
+        page: pagination.current,
         limit: pagination.pageSize,
       }));
     }
@@ -294,18 +381,153 @@ export default function RootLayout({ children }) {
     Object.keys(querys).map((key) => {
       key !== "select" && (query += `${key}=${querys[key]}&`);
     });
-    if (querys.select && querys.select[0])
-      query += `select=${
-        querys &&
-        querys.select &&
-        querys.select[0].join(" ").replaceAll(",", " ")
-      }`;
+
     return query;
   };
 
   const requiredRule = {
     required: true,
     message: "Тус талбарыг заавал бөглөнө үү",
+  };
+
+  const uploadImage = async (options) => {
+    const { onSuccess, onError, file, onProgress } = options;
+    setLoading(true);
+    const fmData = new FormData();
+    const config = {
+      headers: { "content-type": "multipart/form-data" },
+      onUploadProgress: (event) => {
+        const percent = Math.floor((event.loaded / event.total) * 100);
+        setProgress(percent);
+        if (percent === 100) {
+          setTimeout(() => setProgress(0), 1000);
+        }
+        onProgress({ percent: (event.loaded / event.total) * 100 });
+      },
+    };
+
+    fmData.append("file", file);
+    try {
+      const res = await axios.post("/imgupload/memberupload", fmData, config);
+      const img = {
+        name: res.data.data,
+        url: `${base.cdnUrl}/${res.data.data}`,
+      };
+
+      if (imageUrl && imageUrl.name) {
+        await axios.delete("/imgupload", { data: { file: imageUrl.name } });
+      }
+
+      setImageUrl(img);
+      setAlert(res.data.data + " Хуулагдлаа");
+      setLoading(false);
+      return img;
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+      return false;
+    }
+  };
+
+  const handleRemove = (file) => {
+    setImageUrl({});
+    if (isEdit == false)
+      axios
+        .delete("/imgupload", { data: { file: file.name } })
+        .then((succ) => {
+          setAlert("Амжилттай файл устгагдлаа");
+        })
+        .catch((error) => setError(error));
+  };
+
+  const uploadOptions = {
+    onRemove: (file) => handleRemove(file),
+    fileList: imageUrl && imageUrl.name && [imageUrl],
+    customRequest: (options) => uploadImage(options),
+    accept: "image/*",
+    name: "companyLogo",
+    listType: "picture",
+    maxCount: 1,
+  };
+
+  const handleAdd = async (values) => {
+    setLoading(true);
+    try {
+      const data = {
+        ...values,
+        companyLogo: imageUrl.name,
+        pkey: user._id,
+      };
+      await axios.post("/experiences", data);
+      setAlert("Амжилттай нэмэгдлээ.");
+      setLoading(false);
+      await init();
+      handleCancel();
+    } catch (error) {
+      setError(error);
+      handleCancel();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await axios.delete(`/experiences/${selectData._id}`);
+      setAlert("Амжилттай устгагдлаа");
+      await init();
+      handleCancel();
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  const handleEdit = async (values) => {
+    setLoading(true);
+    try {
+      const data = {
+        id: editId,
+        ...values,
+        companyLogo: imageUrl.name,
+        pkey: user._id,
+      };
+
+      const result = await axios.put(`/experiences/${data.id}`, data);
+
+      setAlert("Амжилттай хадгаллаа.");
+      setLoading(false);
+      await init();
+      handleCancel();
+    } catch (error) {
+      setError(error);
+      handleCancel();
+    }
+  };
+
+  const clear = () => {
+    form.resetFields();
+    setLoading(false);
+    setIsEdit(false);
+    setImageUrl({});
+    setSelectData(null);
+  };
+
+  const showEdit = async (key) => {
+    try {
+      const { experience } = await getJob(key);
+      if (experience) {
+        form.setFieldsValue({ ...experience });
+        const img = {
+          name: experience.companyLogo,
+          url: `${base.cdnUrl}/${experience.companyLogo}`,
+        };
+        setEditId(key);
+        setImageUrl(img);
+        showModal("add");
+        setIsEdit(true);
+      }
+    } catch (error) {
+      setError(error);
+    }
   };
 
   return (
@@ -324,7 +546,10 @@ export default function RootLayout({ children }) {
                   </div>
                   <div className="user-form-control">
                     <div className="user-form-btns">
-                      <Button onClick={() => showModal("add")}>
+                      <Button
+                        className="add-btn"
+                        onClick={() => showModal("add")}
+                      >
                         <FontAwesomeIcon icon={faPlus} /> Нэмэх{" "}
                       </Button>
                     </div>
@@ -332,10 +557,10 @@ export default function RootLayout({ children }) {
                       <Table
                         columns={columns}
                         // rowSelection={rowSelection}
-                        // dataSource={data}
+                        dataSource={data}
                         onChange={handleTableChange}
-                        // pagination={tableParams.pagination}
-                        // loading={props.loading}
+                        pagination={tableParams.pagination}
+                        loading={loading}
                         size="small"
                       />
                     </div>
@@ -347,25 +572,50 @@ export default function RootLayout({ children }) {
         </div>
       </section>
       <Modal
-        visible={visible && visible.add}
-        title="Туршилга нэмэх"
+        visible={visible && visible.delete}
+        title={visible.title}
         onCancel={() => handleCancel()}
         footer={[
           <Button key="back" onClick={() => handleCancel()}>
-            Буцах
+            Болих
           </Button>,
           <Button
             key="submit"
             htmlType="submit"
             type="primary"
-            // loading={loading.visible}
+            loading={loading}
+            onClick={() => handleDelete()}
+            danger
+          >
+            Устгах
+          </Button>,
+        ]}
+      >
+        <p>
+          {selectData && selectData.companyName} - ыг устгахдаа итгэлтэй байна
+          уу?
+        </p>
+      </Modal>
+      <Modal
+        visible={visible && visible.add}
+        title={visible.title}
+        onCancel={() => handleCancel()}
+        footer={[
+          <Button key="back" onClick={() => handleCancel()}>
+            Болих
+          </Button>,
+          <Button
+            key="submit"
+            htmlType="submit"
+            type="primary"
+            loading={loading}
             onClick={() => {
               form
                 .validateFields()
-                .then((values) => {})
-                .catch((info) => {
-                  // console.log(info);
-                });
+                .then((values) => {
+                  isEdit == false ? handleAdd(values) : handleEdit(values);
+                })
+                .catch((info) => {});
             }}
           >
             Хадгалах
@@ -412,9 +662,11 @@ export default function RootLayout({ children }) {
                 label="Ажилд орсон огноо"
                 name="startDate"
                 rules={[requiredRule]}
-                style={{ width: "100%" }}
               >
-                <InputNumber placeholder="Ажилд орсон огноо оруулна уу" />
+                <InputNumber
+                  placeholder="Ажилд орсон огноо оруулна уу"
+                  style={{ width: "100%" }}
+                />
               </Form.Item>
             </div>
             <div className="col-lg-12">
@@ -425,6 +677,19 @@ export default function RootLayout({ children }) {
               >
                 <Input placeholder="Ажлаас гарсан огноо оруулна уу" />
               </Form.Item>
+            </div>
+            <div className="col-lg-12">
+              <Dragger {...uploadOptions}>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  Зургаа энэ хэсэг рүү чирч оруулна уу
+                </p>
+                <p className="ant-upload-hint">
+                  Нэг болон түүнээс дээш файл хуулах боломжтой
+                </p>
+              </Dragger>
             </div>
           </div>
         </Form>

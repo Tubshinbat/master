@@ -113,7 +113,7 @@ export default function RootLayout({ children }) {
                           {loader && <Spinner />}
                           <Upload
                             {...uploadOptions}
-                            name="pciture"
+                            name="picture"
                             showUploadList={false}
                             className="upload-list-inline"
                           >

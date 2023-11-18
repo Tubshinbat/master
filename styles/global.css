@@ -28,6 +28,7 @@ img {
 
 section {
   padding: 70px 0px;
+  min-height: 600px;
 }
 
 .gray {
@@ -1479,6 +1480,11 @@ footer a {
   padding: 15px;
 }
 
+.ant-upload-wrapper{
+  display: flex;
+  flex-direction: column;
+}
+
 .user-form-header h4 {
   margin: 0px;
   padding: 0px;
@@ -1489,7 +1495,28 @@ footer a {
   font-size: 14px;
   border-radius: 4px;
   color: #fff;
-  background: rgb(36, 35, 35);
+  background: rgb(3, 107, 192);
+}
+
+.add-btn{
+  font-size: 10px;
+    border-radius: 15px;
+    color: rgb(0, 184, 98);
+  border:1px solid rgb(0, 184, 98);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.add-btn i,
+.add-btn svg{
+  margin-right:5px;
+  width: 10px;
+  font-size: 10px;
+}
+
+.add-btn:hover{
+      color: rgb(0, 146, 78);
+        border: 1px solid rgb(1, 136, 73);
 }
 
 .save-button:hover {
@@ -1500,6 +1527,42 @@ footer a {
 .tableBox{
   margin-top: 20px;
   overflow-y: auto;
+}
+
+.table-image{
+  width: 60px;
+  height: 60px;
+}
+
+.action-btns{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.action-btns button{
+border: none;
+  font-size: 12px;
+  border-radius: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.action-btn-edit{
+  background-color:#099885;
+  color:#fff;
+}
+
+.action-btn-delete {
+  background-color: #f06548;
+  color: #fff;
+}
+
+.action-btns i,
+.action-btns svg{
+  font-size: 10px;
+  width: 10px;
 }
 
 /* SPinner */

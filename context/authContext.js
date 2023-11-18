@@ -45,11 +45,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logOut = async () => {
+    removeCookie("nodetoken");
     await axios.get("members/logout").catch((error) => {});
     setUser(null);
     setIsPassword(false);
     setIsRedirect(false);
-    removeCookie("nodetoken");
   };
 
   const loginUser = (data) => {

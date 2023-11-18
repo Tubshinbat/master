@@ -21,7 +21,8 @@ export default function RootLayout({ children }) {
       await memberCheck(cookies.nodetoken);
     };
 
-    if (cookies) checkData().catch((error) => console.log(error));
+    if (cookies && cookies.nodetoken)
+      checkData().catch((error) => console.log(error));
     if (user) redirect("/profile");
   }, [cookies, user]);
 

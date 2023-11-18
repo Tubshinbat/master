@@ -27,7 +27,7 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
   }, []);
 
   const queryBuild = () => {
-    let query = "";
+    let query = "status=true&";
     let fields = [];
 
     const searchFields = ["categories", "name"];

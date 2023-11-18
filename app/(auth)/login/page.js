@@ -18,7 +18,7 @@ import { redirect } from "next/navigation";
 import { useNotificationContext } from "context/notificationContext";
 
 export default function Page() {
-  const { loginUser, user, memberCheck } = useAuthContext();
+  const { loginUser } = useAuthContext();
   const { contentLoad, setContentLoad } = useNotificationContext();
 
   useEffect(() => {
