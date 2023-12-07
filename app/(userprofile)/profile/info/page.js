@@ -85,7 +85,7 @@ export default function RootLayout({ children }) {
           value: el._id,
           label: el.name,
         }));
-        data.push([...pdata]);
+        data = data.concat(pdata);
 
         setPartners(data);
       }
