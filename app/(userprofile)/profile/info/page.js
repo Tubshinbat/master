@@ -80,10 +80,12 @@ export default function RootLayout({ children }) {
       setCategories(categories);
       if (partners) {
         let data = [];
+
         data = partners.map((el) => ({
           value: el._id,
           label: el.name,
         }));
+        data.push({ value: null, label: "Харьяалалгүй" });
         setPartners(data);
       }
     };

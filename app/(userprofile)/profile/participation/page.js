@@ -356,7 +356,7 @@ export default function RootLayout({ children }) {
 
   // Repeat functions
   const queryBuild = () => {
-    let query = "";
+    let query = `usersearch=true&`;
     Object.keys(querys).map((key) => {
       key !== "select" && (query += `${key}=${querys[key]}&`);
     });
