@@ -81,12 +81,11 @@ export default function RootLayout({ children }) {
       if (partners) {
         let data = [];
         data.push({ value: null, label: "Харьяалалгүй" });
-        data.push(
-          partners.map((el) => ({
-            value: el._id,
-            label: el.name,
-          }))
-        );
+        const pdata = partners.map((el) => ({
+          value: el._id,
+          label: el.name,
+        }));
+        data.push([...pdata]);
 
         setPartners(data);
       }
