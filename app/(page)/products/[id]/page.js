@@ -189,6 +189,7 @@ export default function Page({ params }) {
                         maxWidth: "30%",
                         width: "30%",
                       }}
+                      className="prd-qr"
                       value={`${base.baseUrl}/productrates/${product._id}`}
                       viewBox={`0 0 256 256`}
                     />

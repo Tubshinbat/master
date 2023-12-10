@@ -944,6 +944,16 @@ section {
   justify-content: center;
 }
 
+.product-detials image{
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.product-detials iframe{ 
+  max-width: 100% !important;
+  height: auto;
+}
+
 
 
 .rating-box {
@@ -2178,6 +2188,23 @@ page_detials_header h5 {
 }
 
 @media (max-width: 575px) {
+
+  .product_qr__box {
+      display: flex;
+      padding: 5px;
+      border: 1px solid #eeeeee;
+      margin-top: 20px;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prd-qr{
+      max-width: 80% !important;
+      width: 80% !important;
+    }
+
   .caption-text {
     width: 80%;
   }
