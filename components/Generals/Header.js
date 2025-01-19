@@ -8,7 +8,11 @@ import { getWebInfo } from "lib/webinfo";
 import { getMenus, renderMenu } from "lib/menu";
 import MobileMenu from "./MobileMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faUserAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClose,
+  faSearch,
+  faUserAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAuthContext } from "context/authContext";
 
 const Header = () => {
@@ -16,6 +20,12 @@ const Header = () => {
   const [info, setInfo] = useState(null);
   const [menu, setMenu] = useState([]);
   const [phone, setPhone] = useState([]);
+  const [searchModal, setSearchModal] = useState(false);
+
+  const handleVisible = () => {
+    setSearchModal((prev) => !prev);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const { info } = await getWebInfo();
@@ -32,45 +42,71 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="top-header">
-      <div className="container main-header">
-        <div className="top-header-right">
-          <div className="header-logo">
-            {info && (
-              <Link href="/">
-                <img
-                  src={`${base.cdnUrl}/${info.logo}`}
-                  className="logo-image"
-                />
+    <>
+      <header className="top-header">
+        <div className="container main-header">
+          <div className="top-header-right">
+            <div className="header-logo">
+              {info && (
+                <Link href="/">
+                  <img
+                    src={`${base.cdnUrl}/${info.logo}`}
+                    className="logo-image"
+                  />
+                </Link>
+              )}
+            </div>
+            <ul className="header-menus">{renderMenu(menu)}</ul>
+          </div>
+          <div className="top-header-left">
+            <form method="get" action="/search" className="search-box">
+              <input
+                className="search-input"
+                name="name"
+                placeholder="Хайлт хийх..."
+              />
+              <button className="search-btn" type="submit">
+                <FontAwesomeIcon icon={faSearch} />
+              </button>
+            </form>
+            <MobileMenu menus={menu} info={info} />
+            {!user ? (
+              <Link href="/login" className="user-header-btn">
+                <FontAwesomeIcon icon={faUserAlt} />
+              </Link>
+            ) : (
+              <Link href="/profile" className="user-header-btn">
+                <FontAwesomeIcon icon={faUserAlt} />
               </Link>
             )}
-          </div>
-          <ul className="header-menus">{renderMenu(menu)}</ul>
-        </div>
-        <div className="top-header-left">
-          <form method="get" action="/search" className="search-box">
-            <input
-              className="search-input"
-              name="name"
-              placeholder="Хайлт хийх..."
-            />
-            <button className="search-btn" type="submit">
+            <div
+              className="user-header-btn search-header-m-b"
+              onClick={handleVisible}
+            >
               <FontAwesomeIcon icon={faSearch} />
-            </button>
-          </form>
-          <MobileMenu menus={menu} info={info} />
-          {!user ? (
-            <Link href="/login" className="user-header-btn">
-              <FontAwesomeIcon icon={faUserAlt} />
-            </Link>
-          ) : (
-            <Link href="/profile" className="user-header-btn">
-              <FontAwesomeIcon icon={faUserAlt} />
-            </Link>
-          )}
+            </div>
+          </div>
         </div>
+      </header>
+      <div
+        className="mobile-search-box"
+        style={{ display: searchModal ? "flex" : "none" }}
+      >
+        <div className="close-search" onClick={handleVisible}>
+          <FontAwesomeIcon icon={faClose} />
+        </div>
+        <form method="get" action="/search" className="search-box mobile">
+          <input
+            className="search-input"
+            name="name"
+            placeholder="Хайлт хийх..."
+          />
+          <button className="search-btn" type="submit">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+        </form>
       </div>
-    </header>
+    </>
   );
 };
 

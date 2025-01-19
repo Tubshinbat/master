@@ -26,9 +26,8 @@ const MobileMenu = ({ menus, info }) => {
         <span className="line"> </span>
       </div>
       <div
-        className={`menuMobile  ${
-          active === true ? "displayBlock" : "displayNone"
-        }`}
+        className={`menuMobile  ${active === true ? "displayBlock" : "displayNone"
+          }`}
       >
         <h5>
           <FontAwesomeIcon icon={faClose} onClick={handleToggle} /> Үндсэн цэс
@@ -59,9 +58,8 @@ const MobileMenu = ({ menus, info }) => {
         </div> */}
       </div>
       <div
-        className={`menuMobile-bg ${
-          active === true ? "displayBlock" : "displayNone"
-        }`}
+        className={`menuMobile-bg ${active === true ? "displayBlock" : "displayNone"
+          }`}
         onClick={handleToggle}
       ></div>
     </>

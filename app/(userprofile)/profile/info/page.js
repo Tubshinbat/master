@@ -32,8 +32,6 @@ export default function RootLayout({ children }) {
   };
 
   const handleEdit = async (values) => {
-    values.status = false;
-
     const data = {
       ...values,
     };
