@@ -1,53 +1,31 @@
 "use client";
-import Loader from "components/Generals/Loader";
-import Side from "components/Generals/Side";
-import MemberList from "components/MemberList";
+import Header from "components/Generals/Header";
+import LineWorkList from "components/Generals/LineWorkList";
+import Search from "components/Generals/Search";
+import HomeCompany from "components/Home/HomeCompany";
+import HomeExperts from "components/Home/HomeExperts";
+import useCompany from "hooks/useCompany";
+import useMenus from "hooks/useMenus";
+import useWebInfo from "hooks/useWebInfo";
+import useWorks from "hooks/useWorks";
+
 import { Suspense, useEffect } from "react";
 
 export default function Page() {
-  const googleTranslateElementInit = () => {
-    new window.google.translate.TranslateElement(
-      {
-        pageLanguage: "en",
-        autoDisplay: false,
-      },
-      "google_translate_element"
-    );
-  };
-  useEffect(() => {
-    var addScript = document.createElement("script");
-    addScript.setAttribute(
-      "src",
-      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-    );
-    document.body.appendChild(addScript);
-    window.googleTranslateElementInit = googleTranslateElementInit;
-  }, []);
+  const { info } = useWebInfo();
+  const { menus } = useMenus();
+  const { works } = useWorks();
+  const { companies } = useCompany();
 
   return (
     <>
-      <Suspense fallback={<Loader />}>
-        <div className="main">
-          <section>
-            <div className="container">
-              <div className="translate-google">
-                <div id="google_translate_element"></div>
-              </div>
-            </div>
+      <Header info={info} menus={menus} />
+      <Search works={works} />
+      <LineWorkList works={works} />
+      <HomeCompany companies={companies} />
+      <HomeExperts />
 
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-3">
-                  <Side />
-                </div>
-                <div className="col-lg-9">
-                  <MemberList />
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </Suspense>
+      <section className="section"></section>
     </>
   );
 }

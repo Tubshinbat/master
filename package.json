@@ -32,6 +32,7 @@
     "html-to-text": "^9.0.3",
     "i": "^0.3.7",
     "javascript-time-ago": "^2.5.9",
+    "lucide-react": "^0.507.0",
     "moment": "^2.29.4",
     "next": "^13.4.5",
     "npm": "^9.7.1",
