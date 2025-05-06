@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  reactStrictMode: true,
+  reactStrictMode: false,
   experimental: {
     scrollRestoration: true,
   },

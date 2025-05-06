@@ -5,6 +5,7 @@ import Search from "components/Generals/Search";
 import HomeCompany from "components/Home/HomeCompany";
 import HomeExperts from "components/Home/HomeExperts";
 import useCompany from "hooks/useCompany";
+import useMembers from "hooks/useMembers";
 import useMenus from "hooks/useMenus";
 import useWebInfo from "hooks/useWebInfo";
 import useWorks from "hooks/useWorks";
@@ -16,6 +17,9 @@ export default function Page() {
   const { menus } = useMenus();
   const { works } = useWorks();
   const { companies } = useCompany();
+  const { experts } = useMembers();
+
+  console.log(experts);
 
   return (
     <>
@@ -23,7 +27,7 @@ export default function Page() {
       <Search works={works} />
       <LineWorkList works={works} />
       <HomeCompany companies={companies} />
-      <HomeExperts />
+      <HomeExperts members={experts} />
 
       <section className="section"></section>
     </>
