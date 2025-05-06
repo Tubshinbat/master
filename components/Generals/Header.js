@@ -4,11 +4,13 @@ import base from "lib/base";
 
 import { useAuthContext } from "context/authContext";
 import { usePathname } from "next/navigation";
-import MobileMenu from "./MobileMenu_2";
+import MobileMenu from "./MobileMenu";
+import { useState } from "react";
 
 const Header = ({ info, menus }) => {
   const { user } = useAuthContext();
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   const renderMenu = (categories, child = false, parentSlug = "") => {
     let customCategories = [];
@@ -62,14 +64,16 @@ const Header = ({ info, menus }) => {
 
     return customCategories;
   };
-
+  const toggleMenu = () => {
+    setIsOpen((bIsOpen) => (bIsOpen ? false : true));
+  };
   return (
     <>
       <header className="header-top">
         <div className="container-fluid">
           <div className="header-inner">
             <div className="header-left">
-              <div className="header__burger">
+              <div className="header__burger" onClick={toggleMenu}>
                 <div className="burger__lines">
                   <span className="burger__line"></span>
                   <span className="burger__line"></span>
@@ -111,7 +115,8 @@ const Header = ({ info, menus }) => {
             </div>
           </div>
         </div>
-      </header>
+      </header>{" "}
+      {isOpen && <MobileMenu toggleMenu={toggleMenu} menus={menus} />}
     </>
   );
 };

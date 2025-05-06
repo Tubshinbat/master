@@ -1,5 +1,5 @@
 "use client";
-import { languageBuild } from "lib/language";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ const MobileMenu = ({ toggleMenu, menus = [] }) => {
         category.slug ||
         category.newsCategory;
       const isActive = path === pathname;
-      const name = languageBuild(category, "name", cookies.language);
+      const name = category.name;
       const hasChildren = children && children.length > 0;
 
       return (
