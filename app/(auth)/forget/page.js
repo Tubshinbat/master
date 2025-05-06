@@ -42,7 +42,6 @@ export default function Page() {
     <>
       <section>
         <div className="container">
-          <img src="/images/img-4.svg" className="shap-1" />
           <div className="login_page">
             <h4> Нууц үг сэргээх </h4>
 

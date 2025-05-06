@@ -16,6 +16,9 @@ import { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { redirect } from "next/navigation";
 import { useNotificationContext } from "context/notificationContext";
+import Header from "components/Generals/Header";
+import useWebInfo from "hooks/useWebInfo";
+import useMenus from "hooks/useMenus";
 
 export default function Page() {
   const { loginUser } = useAuthContext();
@@ -35,7 +38,6 @@ export default function Page() {
     <>
       <section>
         <div className="container">
-          <img src="/images/img-4.svg" className="shap-1" />
           <div className="login_page">
             <h4> Гишүүн нэвтрэх </h4>
 

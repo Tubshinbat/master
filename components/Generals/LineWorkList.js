@@ -6,8 +6,13 @@ import "swiper/css/navigation";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const LineWorkList = ({ works }) => {
+  const pathname = usePathname();
+  const activeLink = pathname.split("/")[2] || "members";
+
   return (
     <div className="line-works-list">
       <div className="container-fluid">
@@ -28,7 +33,9 @@ const LineWorkList = ({ works }) => {
                 className="work-line-item"
                 style={{ width: "auto" }} // ✨ width auto болгож байна
               >
-                <span>{item.name}</span>
+                <Link href={`/search/${activeLink}?categories=${item._id}`}>
+                  <span>{item.name}</span>
+                </Link>
               </SwiperSlide>
             ))}
         </Swiper>

@@ -1,50 +1,33 @@
 "use client";
 import { getMembers } from "lib/getFetchers";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Tag } from "antd";
 import BlockLoad from "./Generals/BlockLoad";
 import NotFound from "./Generals/Notfound";
-import Member from "./Member";
+import MemberItem from "./Members/MemberItem";
 
 const MemberList = ({ plusQuery = "plus=none" }) => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginate, setPaginate] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const qry = queryBuild();
-      const { members, pagination } = await getMembers(`${qry}&${plusQuery}`);
-
-      if (members) setData(members);
-
-      if (pagination) setPaginate(pagination);
-      setLoading(false);
-    };
-
-    fetchData().catch((error) => console.log(error));
-  }, []);
+  const loadMoreRef = useRef(null);
 
   const queryBuild = () => {
     let query = "status=true&";
     let fields = [];
 
-    const searchFields = ["categories", "name"];
-
-    searchFields.map((field) => {
+    const searchFields = ["categories", "name", "q"];
+    searchFields.forEach((field) => {
       if (searchParams.get(field)) {
         query += `${field}=${searchParams.get(field)}&`;
-        if (
-          searchParams.get(field) &&
-          searchParams.get(field).split(",").length > 0
-        ) {
-          searchParams
-            .get(field)
-            .split(",")
-            .map((el) => fields.push({ name: field, data: el }));
-        } else {
-          query += `${field}=&`;
+        const values = searchParams.get(field).split(",");
+        if (values.length > 0) {
+          values.forEach((el) => fields.push({ name: field, data: el }));
         }
       }
     });
@@ -52,62 +35,148 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
     return query;
   };
 
-  useEffect(() => {
-    const qry = queryBuild();
-
-    const fetchData = async (query) => {
-      const { members, pagination } = await getMembers(query + "&" + plusQuery);
-      setPaginate(pagination);
-      setData(members);
-      setLoading(false);
-    };
-
-    setLoading(true);
-    fetchData(qry).catch((error) => console.log(error));
-  }, [searchParams]);
+  const fetchData = async (queryStr) => {
+    const { members, pagination } = await getMembers(
+      queryStr + "&" + plusQuery
+    );
+    setData(members || []);
+    setPaginate(pagination || null);
+    setLoading(false);
+  };
 
   const nextpage = () => {
     const qry = queryBuild();
-
-    const next = async () => {
-      setLoading(true);
-      const { members, pagination } = await getMembers(
-        `${qry}page=${paginate.nextPage}&${plusQuery}`
-      );
-      setData((bs) => [...bs, ...members]);
-      setPaginate(pagination);
-      setLoading(false);
-    };
-
     if (paginate && paginate.nextPage) {
-      next().catch((error) => console.log(error));
+      setLoading(true);
+      getMembers(`${qry}page=${paginate.nextPage}&${plusQuery}`)
+        .then(({ members, pagination }) => {
+          setData((prev) => [...prev, ...members]);
+          setPaginate(pagination);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
     }
   };
 
-  if (loading === true && data.length <= 0) {
-    return <BlockLoad />;
-  }
+  // Initial + dependency-based fetch
+  useEffect(() => {
+    const qry = queryBuild();
+    setLoading(true);
+    fetchData(qry).catch((err) => console.log(err));
+  }, [searchParams]);
 
-  if (data && data.length <= 0) {
-    return <NotFound />;
-  }
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!paginate?.nextPage || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          nextpage();
+        }
+      },
+      { rootMargin: "100px" }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [paginate, loading]);
+
+  const clearAllFilters = () => {
+    router.push(pathname); // removes all query params
+  };
+
+  const removeFilter = (key, value) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const current = params.get(key)?.split(",") || [];
+
+    const updated = current.filter((item) => item !== value);
+    if (updated.length > 0) {
+      params.set(key, updated.join(","));
+    } else {
+      params.delete(key);
+    }
+
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  if (loading && data.length === 0) return <BlockLoad />;
+  if (!loading && data.length === 0) return <NotFound />;
 
   return (
     <>
-      <div className="member-list">
-        <div className="row gy-4">
-          {data &&
-            data.map((el) => (
-              <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={el._id}>
-                <Member data={el} />
-              </div>
-            ))}
+      {/* ✅ FILTER HEADER */}
+      <div className="mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          {/* Үр дүнгийн тоо */}
+          <div>
+            <strong>{paginate?.total || data.length}</strong> гишүүн байна
+          </div>
+
+          {/* Filter Tag-ууд */}
+          {["categories", "name", "q"].map((key) => {
+            const val = searchParams.get(key);
+            if (!val) return null;
+
+            return val.split(",").map((v) => (
+              <Tag
+                key={`${key}-${v}`}
+                closable
+                onClose={() => removeFilter(key, v)}
+                color="blue"
+              >
+                {v}
+              </Tag>
+            ));
+          })}
+
+          {/* Цэвэрлэх товч */}
+          {(searchParams.get("categories") ||
+            searchParams.get("name") ||
+            searchParams.get("q")) && (
+            <button
+              onClick={clearAllFilters}
+              className="btn btn-sm btn-outline-danger"
+            >
+              Цэвэрлэх
+            </button>
+          )}
         </div>
       </div>
-      {loading === true && <BlockLoad />}
-      {paginate && paginate.nextPage && (
+
+      {/* ✅ MAIN LIST */}
+      <div className="member-list">
+        <div className="row gy-4">
+          {data.map((el) => (
+            <div
+              className="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-6"
+              key={el._id}
+            >
+              <MemberItem data={el} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ✅ LOADING BLOCK */}
+      {loading && <BlockLoad />}
+
+      {/* ✅ SCROLL REF */}
+      {paginate?.nextPage && (
+        <div ref={loadMoreRef} style={{ height: 1 }}></div>
+      )}
+
+      {/* ✅ Fallback button */}
+      {paginate?.nextPage && (
         <div className="pagination">
-          <button className="more-page" onClick={() => nextpage()}>
+          <button className="more-page" onClick={nextpage}>
             Дараагийн хуудас
           </button>
         </div>

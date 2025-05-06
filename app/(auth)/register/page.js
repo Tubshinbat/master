@@ -32,7 +32,6 @@ export default function Page() {
     <>
       <section>
         <div className="container">
-          <img src="/images/img-1.svg" className="shap-2" />
           <div className="login_page">
             <h4> Бүртгүүлэх </h4>
             <Form

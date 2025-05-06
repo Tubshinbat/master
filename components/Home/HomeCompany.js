@@ -21,7 +21,6 @@ const HomeCompany = ({ companies }) => {
         <div className="section__body">
           <Swiper
             modules={[Navigation, Autoplay]}
-            slidesPerView="auto"
             slidesPerView={4}
             spaceBetween={15}
             breakpoints={{

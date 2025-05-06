@@ -13,6 +13,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import base from "lib/base";
 import Image from "next/image";
 import Link from "next/link";
+import StarRating from "./Members/Star";
+import ImageAvatar from "./Generals/ImageAvatar";
 
 const RateColMember = ({ data }) => {
   return (
@@ -21,93 +23,21 @@ const RateColMember = ({ data }) => {
         <div className="member-col-left">
           <div className="member-col-head">
             <div className="member-col-img-box">
-              <img
-                className="member-img"
-                src={`${base.cdnUrl}/350x350/${data.picture}`}
+              <ImageAvatar
+                className="member-col-img"
+                image={`${data.picture}`}
               />
             </div>
-          </div>
-
-          <div className="member-name">
-            <div className="member-col-name">{data.name}</div>
+          </div>{" "}
+          <div className="member-col-info">
+            <h4>{data.name}</h4>
             <span> {data.position}</span>
           </div>
         </div>
-        <div className="ratingCount">
-          <div className="member-rate">
+        <div className="member-col-right">
+          <div className="member-rating-star-box">
             <span> Зэрэглэл </span>
-            <div className="star-rating">
-              <input
-                id={`star-5-${data._id}`}
-                type="radio"
-                name={`rating-${data._id}`}
-                defaultValue={`star-5-${data._id}`}
-                checked={data.rating === 5}
-              />
-              <label htmlFor={`star-5-${data._id}`} title="5 stars">
-                <FontAwesomeIcon
-                  className="active"
-                  icon={faStar}
-                  aria-hidden="true"
-                />
-              </label>
-              <input
-                id={`star-4-${data._id}`}
-                type="radio"
-                name={`rating-${data._id}`}
-                defaultValue={`star-4-${data._id}`}
-                checked={data.rating === 4}
-              />
-              <label htmlFor={`star-4-${data._id}`} title="4 stars">
-                <FontAwesomeIcon
-                  className="active"
-                  icon={faStar}
-                  aria-hidden="true"
-                />
-              </label>
-              <input
-                id={`star-3-${data._id}`}
-                type="radio"
-                name={`rating-${data._id}`}
-                defaultValue={`star-3-${data._id}`}
-                checked={data.rating === 3}
-              />
-              <label htmlFor={`star-3-${data._id}`} title="3 stars">
-                <FontAwesomeIcon
-                  className="active"
-                  icon={faStar}
-                  aria-hidden="true"
-                />
-              </label>
-              <input
-                id={`star-2-${data._id}`}
-                type="radio"
-                name={`rating-${data._id}`}
-                defaultValue={`star-2-${data._id}`}
-                checked={data.rating === 2}
-              />
-              <label htmlFor={`star-2-${data._id}`} title="2 stars">
-                <FontAwesomeIcon
-                  className="active"
-                  icon={faStar}
-                  aria-hidden="true"
-                />
-              </label>
-              <input
-                id={`star-1-${data._id}`}
-                type="radio"
-                name={`rating-${data._id}`}
-                defaultValue={`star-1-${data._id}`}
-                checked={data.rating === 1}
-              />
-              <label htmlFor={`star-1-${data._id}`} title="1 star">
-                <FontAwesomeIcon
-                  className="active"
-                  icon={faStar}
-                  aria-hidden="true"
-                />
-              </label>
-            </div>
+            <StarRating value={data.rating * 20} />
           </div>
           <div className="rating-count">
             <h6>{data.ratingCount}</h6>

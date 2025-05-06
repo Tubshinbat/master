@@ -5,7 +5,7 @@ module.exports = {
       script: "npm start",
       autorestart: true,
       env: {
-        PORT: 1004,
+        PORT: 2003,
         NODE_ENV: "production",
         SERVER_ENV: "production",
         DEBUG: "server:*",

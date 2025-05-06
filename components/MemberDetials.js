@@ -165,14 +165,14 @@ const MemberDetials = ({ data, alternativeMembers }) => {
               <h6> QR кодыг уншуулан үнэлгээ өгнө үү </h6>
               <div className="qr__box">
                 <QRCode
-                  size={256}
+                  size={126}
                   style={{
                     height: "auto",
                     maxWidth: "100%",
                     width: "100%",
                   }}
                   value={`${base.baseUrl}/rates/${data._id}`}
-                  viewBox={`0 0 256 256`}
+                  viewBox={`0 0 125 125`}
                 />
               </div>
             </div>

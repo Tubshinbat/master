@@ -4,6 +4,7 @@ import base from "lib/base";
 
 import { useAuthContext } from "context/authContext";
 import { usePathname } from "next/navigation";
+import MobileMenu from "./MobileMenu_2";
 
 const Header = ({ info, menus }) => {
   const { user } = useAuthContext();
@@ -68,12 +69,26 @@ const Header = ({ info, menus }) => {
         <div className="container-fluid">
           <div className="header-inner">
             <div className="header-left">
+              <div className="header__burger">
+                <div className="burger__lines">
+                  <span className="burger__line"></span>
+                  <span className="burger__line"></span>
+                  <span className="burger__line"></span>
+                </div>
+              </div>
               <div className="logo">
                 <Link href="/">
                   <img src={`${base.cdnUrl}/${info?.logo}`} alt="logo" />
                 </Link>
               </div>
               <nav className="header-menus">{renderMenu(menus)}</nav>
+            </div>
+            <div className="header-center">
+              <div className="logo">
+                <Link href="/">
+                  <img src={`${base.cdnUrl}/${info?.logo}`} alt="logo" />
+                </Link>
+              </div>
             </div>
             <div className="header-right">
               <div className="header-login">

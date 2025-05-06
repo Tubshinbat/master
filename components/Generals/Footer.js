@@ -8,7 +8,7 @@ import {
 import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import base from "lib/base";
-import { getPartners } from "lib/getFetchers";
+import { getPartners, getSocialLinks } from "lib/getFetchers";
 import { getWebInfo } from "lib/webinfo";
 import { useEffect, useState } from "react";
 
@@ -16,15 +16,18 @@ const Footer = () => {
   const [partners, setPartners] = useState([]);
   const [info, setInfo] = useState({});
   const [phone, setPhone] = useState([]);
+  const [socials, setSocial] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       const { partners } = await getPartners(`status=true&limit=5`);
       const { info } = await getWebInfo();
+      const { socials } = await getSocialLinks();
       if (info) {
         setPhone(info.phone.split(","));
         setInfo(info);
       }
-
+      setSocial(socials || []);
       setPartners(partners);
     };
     fetchData().catch((error) => console.log(error));
@@ -33,23 +36,14 @@ const Footer = () => {
     <>
       <footer>
         <div className="container">
-          <div className="row">
-            <div
-              className="col-xl-6 col-lg-6 col-md-12"
-              data-aos="fade-right"
-              data-aos-duration={800}
-            >
+          <div className="row g-4">
+            <div className="col-xl-4 col-lg-4 col-md-12">
               <div className="footer-about">
                 <img src={`${base.cdnUrl}/${info.whiteLogo}`} />
                 <p>{info.siteInfo}</p>
               </div>
             </div>
-            <div
-              className="col-xl-3  col-lg-3 col-md-12"
-              data-aos="fade-up"
-              data-aos-anchor-placement="top-bottom"
-              data-aos-duration={800}
-            >
+            <div className="col-xl-4  col-lg-4 col-md-12">
               <ul className="footer-menus">
                 <li>
                   <a href={base.baseUrl}> Эхлэл </a>
@@ -66,12 +60,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-            <div
-              className="col-xl-3  col-lg-3 col-md-12"
-              data-aos="fade-up"
-              data-aos-anchor-placement="top-bottom"
-              data-aos-duration={800}
-            >
+            <div className="col-xl-4  col-lg-4 col-md-12">
               <div className={`footer-contact `}>
                 <div className={`footer-phone `}>
                   {phone && phone[0] && (
@@ -90,24 +79,14 @@ const Footer = () => {
                   <a href={`mailto:${info.email}`}> {info.email}</a>
                 </div>
                 <div className="footer-social-links">
-                  <a href="https://www.facebook.com/">
-                    <FontAwesomeIcon
-                      icon={faFacebookF}
-                      className="footer-social-link"
-                    />
-                  </a>
-                  <a href="https://www.twitter.com/">
-                    <FontAwesomeIcon
-                      icon={faTwitter}
-                      className="footer-social-link"
-                    />
-                  </a>
-                  <a href="https://www.youtube.com/">
-                    <FontAwesomeIcon
-                      icon={faYoutube}
-                      className="footer-social-link"
-                    />
-                  </a>
+                  {socials &&
+                    socials.map((item) => (
+                      <a href={item.link} key={item._id} target="_blank">
+                        <i
+                          className={`fa-brands fa-${item.name.toLowerCase()}`}
+                        />
+                      </a>
+                    ))}
                 </div>
               </div>
             </div>
@@ -115,10 +94,7 @@ const Footer = () => {
         </div>
       </footer>
       <div className={`footer-bar`}>
-        <span
-          className="wow animate__animated animate__fadeInDown"
-          data-wow-delay={`1s`}
-        >
+        <span>
           © Бүх эрх хуулиар хамгаалагдсан. {new Date().getFullYear()} он
         </span>
       </div>

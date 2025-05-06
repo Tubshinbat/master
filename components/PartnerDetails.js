@@ -25,6 +25,9 @@ import { Button, Modal, Tabs } from "antd";
 import TabPane from "antd/es/tabs/TabPane";
 import Member from "./Member";
 import Teacher from "./Teacher";
+import StarRating from "./Members/Star";
+import { Mail, PhoneCall } from "lucide-react";
+import MemberItem from "./Members/MemberItem";
 
 const PartnerDetails = ({ data, members, coursies }) => {
   const contactRender = (link) => {
@@ -75,8 +78,8 @@ const PartnerDetails = ({ data, members, coursies }) => {
 
   return (
     <>
-      <div className="partner-details-head card-box">
-        <div className="partner-cover ">
+      <div className="partner-header">
+        <div className="partner-cover">
           {data.cover ? (
             <img
               className="partner-cover-img"
@@ -102,146 +105,162 @@ const PartnerDetails = ({ data, members, coursies }) => {
             </div>
           </div>
           <div className="member-contact head-contact">
-            {data.links &&
-              JSON.parse(data.links).map((link) => (
-                <>
-                  <a
-                    href={
-                      link.name.toLowerCase() === "phone"
-                        ? "callto:" + link.link
-                        : link.name.toLowerCase() === "email"
-                        ? "mailto:" + link.link
-                        : link.link
-                    }
-                    target="_blank"
-                    className="member-contact-item"
-                  >
-                    {contactRender(link)}
-                  </a>
-                </>
-              ))}
-            <div
-              className="member-contact-item qr-code-modal-btn"
-              onClick={handleCancel}
-            >
-              <FontAwesomeIcon icon={faQrcode} />
+            <div className="profile-rating">
+              <div className="profile-star">
+                <label>Нийт үнэлгээ</label>
+                <StarRating
+                  value={data?.rating * 20}
+                  ratingCount={data?.ratingCount}
+                />
+              </div>
+              <div className="qr__box">
+                <QRCode
+                  size={80}
+                  style={{
+                    height: "auto",
+                    maxWidth: "100%",
+                    width: "100%",
+                  }}
+                  value={`${base.baseUrl}/partner-rating/${data._id}`}
+                  viewBox={`0 0 80 80`}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="partner-details">
-        <div className="translate-google">
-          <div id="google_translate_element"></div>
-        </div>
-      </div>
+      <div className="profile-content">
+        <div className="row">
+          <div className="col-xl-9 col-lg-9 col-md-12 col-sm-12">
+            <Tabs defaultActiveKey="details" className="profile_tabs">
+              <TabPane tab="Дэлгэрэнгүй" key="details">
+                <div
+                  className="profile-detail"
+                  dangerouslySetInnerHTML={{
+                    __html: data.about,
+                  }}
+                ></div>
+                <div className="profile-categories">
+                  {data.category &&
+                    data.category.map((cat) => (
+                      <div className="category-item"> {cat.name} </div>
+                    ))}
+                </div>
 
-      <Tabs defaultActiveKey="details" className="profile_tabs">
-        <TabPane tab="Дэлгэрэнгүй" key="details">
-          <div className="card-box">
-            <div
-              className="profile-detail"
-              dangerouslySetInnerHTML={{
-                __html: data.about,
-              }}
-            ></div>
-            <div className="profile-categories">
-              {data.category &&
-                data.category.map((cat) => (
-                  <div className="category-item"> {cat.name} </div>
-                ))}
+                <h4 className="sub-title-box mt-4 mb-2"> Хамт олон </h4>
+                <div className="row member-company-list g-4">
+                  {members &&
+                    members.length > 0 &&
+                    members.map((el, index) => (
+                      <div
+                        className="col-lg-3 col-md-4 col-sm-6 col-12"
+                        key={el._id}
+                      >
+                        <MemberItem data={el} />
+                      </div>
+                    ))}
+                </div>
+              </TabPane>
+              <TabPane tab="Сургалт" key="courses">
+                {coursies &&
+                  coursies.map((el) => (
+                    <div className="course-item" key={el._id}>
+                      <div className="course-info">
+                        <div className="course-img">
+                          <img src={`${base.cdnUrl}/450/${el.picture}`} />
+                        </div>
+                        <div className="course-info-details">
+                          <div className="course-title">
+                            <span> Сургалтын нэр </span>
+                            <p>{el.name}</p>
+                          </div>
+                          <div className="course-info-item">
+                            {el.students.length} төгсөгчид{" "}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="course-teachers">
+                        <h4>Багш нар</h4>
+                        <div className="row member-teacher-list">
+                          {el.teachers &&
+                            el.teachers.map((teacher, index) => (
+                              <div
+                                className="col-lg-3 col-md-3 col-sm-6 col-12"
+                                key={teacher._id + index}
+                              >
+                                <Teacher data={teacher} />
+                              </div>
+                            ))}
+                        </div>
+                      </div>{" "}
+                      <div className="course-teachers">
+                        <h4>Шавь нар</h4>
+                        <div className="row ">
+                          {el.students &&
+                            el.students.map((students, index) => (
+                              <div
+                                className="col-lg-2 col-md-3 col-sm-6 col-12"
+                                key={students._id + index}
+                              >
+                                <Teacher data={students} />
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </TabPane>
+              <TabPane tab="Үнэлгээ" key="rate"></TabPane>
+            </Tabs>
+          </div>
+          <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+            <div className="profile-sidebar mt-5">
+              <div className="profile-side">
+                <div className="profile-side-head">
+                  <h6> Холбоо барих </h6>
+                </div>
+                <div className="profile-side-body">
+                  <div className="member-contact">
+                    <div className="member-contact-item">
+                      <a href={`tel:${data?.phoneNumber}`}>
+                        <PhoneCall />
+                        {data?.phoneNumber}
+                      </a>
+                    </div>
+                    <div className="member-contact-item">
+                      <a href={`mailto:${data?.email}`}>
+                        <Mail />
+                        {data?.email}
+                      </a>
+                    </div>
+
+                    <div className="contact-links">
+                      {data.links &&
+                        JSON.parse(data.links).map((link) => (
+                          <>
+                            <a
+                              href={
+                                link.name.toLowerCase() === "phone"
+                                  ? "callto:" + link.link
+                                  : link.name.toLowerCase() === "email"
+                                  ? "mailto:" + link.link
+                                  : link.link
+                              }
+                              target="_blank"
+                              className="member-contact-item"
+                            >
+                              {contactRender(link)}
+                            </a>
+                          </>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>{" "}
             </div>
           </div>
-          <h4 className="sub-title-box"> Хамт олон </h4>
-          <div className="row member-company-list">
-            {members &&
-              members.length > 0 &&
-              members.map((el, index) => (
-                <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={el._id}>
-                  <Member data={el} />
-                </div>
-              ))}
-          </div>
-        </TabPane>
-        <TabPane tab="Сургалт" key="courses">
-          <div className="card-box">
-            {coursies &&
-              coursies.map((el) => (
-                <div className="course-item" key={el._id}>
-                  <div className="course-info">
-                    <div className="course-img">
-                      <img src={`${base.cdnUrl}/450/${el.picture}`} />
-                    </div>
-                    <div className="course-info-details">
-                      <div className="course-title">
-                        <span> Сургалтын нэр </span>
-                        <p>{el.name}</p>
-                      </div>
-                      <div className="course-info-item">
-                        {el.students.length} төгсөгчид{" "}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="course-teachers">
-                    <h4>Багш нар</h4>
-                    <div className="row member-teacher-list">
-                      {el.teachers &&
-                        el.teachers.map((teacher, index) => (
-                          <div
-                            className="col-lg-3 col-md-3 col-sm-6 col-12"
-                            key={teacher._id + index}
-                          >
-                            <Teacher data={teacher} />
-                          </div>
-                        ))}
-                    </div>
-                  </div>{" "}
-                  <div className="course-teachers">
-                    <h4>Шавь нар</h4>
-                    <div className="row ">
-                      {el.students &&
-                        el.students.map((students, index) => (
-                          <div
-                            className="col-lg-2 col-md-3 col-sm-6 col-12"
-                            key={students._id + index}
-                          >
-                            <Teacher data={students} />
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </TabPane>
-        <TabPane tab="Үнэлгээ" key="rate">
-          <div className="card-box"></div>
-        </TabPane>
-      </Tabs>
-
-      <Modal
-        title={"QR код"}
-        visible={qrModal}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={() => handleCancel()}>
-            Буцах
-          </Button>,
-        ]}
-      >
-        <div className="modal-body modal-qr-body">
-          {" "}
-          <QRCode
-            size={100}
-            style={{
-              height: "auto",
-              maxWidth: "100%",
-              width: "220",
-            }}
-            value={`${base.baseUrl}/${data._id}`}
-            viewBox={`0 0 256 256`}
-          />
         </div>
-      </Modal>
+      </div>
     </>
   );
 };

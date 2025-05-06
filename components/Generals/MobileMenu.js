@@ -1,68 +1,112 @@
 "use client";
-import { useState } from "react";
-import { renderMenu } from "lib/menu";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { languageBuild } from "lib/language";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 
-const MobileMenu = ({ menus, info }) => {
-  const [active, setActive] = useState(false);
+const MobileMenu = ({ toggleMenu, menus = [] }) => {
+  const [cookies] = useCookies(["language", "template"]);
+  const [currentMenu, setCurrentMenu] = useState(menus); // Одоогийн харагдах цэс
+  const [menuHistory, setMenuHistory] = useState([]); // Буцах замналын стэк
+  const pathname = usePathname();
 
-  const backGo = () => {
-    router.back();
-  };
+  // Цэсийг дүрслэх функц
+  const renderMenu = (categories) => {
+    if (!categories || categories.length === 0) {
+      return <p>No menu items available</p>;
+    }
 
-  const handleToggle = () => {
-    setActive((ba) => {
-      if (ba === true) return false;
-      else return true;
+    return categories.map((category, index) => {
+      const { children } = category;
+      const path =
+        category.direct ||
+        category.model ||
+        category.slug ||
+        category.newsCategory;
+      const isActive = path === pathname;
+      const name = languageBuild(category, "name", cookies.language);
+      const hasChildren = children && children.length > 0;
+
+      return (
+        <li
+          key={`${category._id}-${index}`}
+          className={`menu-item ${hasChildren ? "dropMenu" : ""} ${
+            isActive ? "active" : ""
+          }`}
+        >
+          {hasChildren ? (
+            <a
+              href="#"
+              className="header-link"
+              onClick={() => handleChild(children)}
+            >
+              {name}
+              <i className="fa-solid fa-arrow-right"></i>
+            </a>
+          ) : (
+            <Link
+              scroll={true}
+              href={renderLink(category)}
+              className="header-link"
+              target={category.inWindow ? "_blank" : ""}
+            >
+              {name}
+            </Link>
+          )}
+        </li>
+      );
     });
   };
 
+  // Туслах функц: Замыг тодорхойлох
+  const renderLink = (category) => {
+    switch (true) {
+      case category.isDirect:
+        return category.direct;
+      case category.isModel:
+        return "/" + category.model;
+      case category.isCategory:
+        return "/news?categories=" + category.newsCategory;
+      default:
+        return "/page/" + category.slug;
+    }
+  };
+
+  // Дэд цэс рүү шилжих
+  const handleChild = (children) => {
+    if (children && children.length > 0) {
+      // Өмнөх цэсийг стэкт нэмэх
+      setMenuHistory((prev) => [...prev, currentMenu]);
+      setCurrentMenu(children); // Одоогийн харагдах цэсийг шинэчлэх
+    }
+  };
+
+  // Буцах функц
+  const handleBack = () => {
+    if (menuHistory.length > 0) {
+      // Стэкийн хамгийн сүүлийн цэсийг сэргээх
+      const lastMenu = menuHistory[menuHistory.length - 1];
+      setMenuHistory((prev) => prev.slice(0, -1)); // Сүүлийн элементийг устгах
+      setCurrentMenu(lastMenu);
+    }
+  };
+
   return (
-    <>
-      <div className="burger__menu" onClick={handleToggle}>
-        <span className="line"> </span>
-        <span className="line"> </span>
-        <span className="line"> </span>
-      </div>
-      <div
-        className={`menuMobile  ${active === true ? "displayBlock" : "displayNone"
-          }`}
-      >
-        <h5>
-          <FontAwesomeIcon icon={faClose} onClick={handleToggle} /> Үндсэн цэс
-        </h5>
-        <ul>{renderMenu(menus)}</ul>
-        <div className="contactMobile">
-          {info && (
-            <>
-              <li>
-                <a href={`tel:${info.phone}`}> Утас: {info.phone} </a>
-              </li>
-              <li>
-                <a href={`mailto:${info.email}`}> Имэйл: {info.email} </a>
-              </li>
-              <li>Хаяг: {info.address}</li>
-            </>
-          )}
+    <div className="mobile_menu">
+      <button className="mobile_menu_close" onClick={toggleMenu}>
+        ✕
+      </button>
+      {/* Буцах товчийг динамикаар харуулна */}
+      {menuHistory.length > 0 && (
+        <div className="mobile_menu_back" onClick={handleBack}>
+          <i className="fa-solid fa-arrow-left"></i>{" "}
+          {cookies.language == "eng" ? "Back" : "Буцах"}
         </div>
-        {/* <div className="socialMobile">
-          {socialLinks &&
-            socialLinks.map((el) => (
-              <a href={el.link} key={`${el._id}-som`} target="_blank">
-                <i
-                  className={`fa-brands fa-${el.name.toLowerCase()}-square`}
-                ></i>
-              </a>
-            ))}
-        </div> */}
-      </div>
-      <div
-        className={`menuMobile-bg ${active === true ? "displayBlock" : "displayNone"
-          }`}
-        onClick={handleToggle}
-      ></div>
-    </>
+      )}
+      {/* Одоогийн цэс */}
+      <ul>{renderMenu(currentMenu)}</ul>
+    </div>
   );
 };
 

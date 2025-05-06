@@ -82,7 +82,6 @@ export default function Page({ params }) {
     <>
       <section>
         <div className="container">
-          <img src="/images/img-4.svg" className="shap-1" />
           <div className="login_page">
             {loading && <Spinner />}
             <h4> Шинэ нууц үгээ оруулна уу </h4>

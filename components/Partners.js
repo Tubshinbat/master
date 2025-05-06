@@ -1,111 +1,166 @@
 "use client";
 import { getPartners } from "lib/getFetchers";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Tag } from "antd";
 import BlockLoad from "./Generals/BlockLoad";
 import NotFound from "./Generals/Notfound";
 import Partner from "./Partner";
 
 const Partners = () => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paginate, setPaginate] = useState(null);
+  const loadMoreRef = useRef(null);
 
   const queryBuild = () => {
-    let query = "";
-    let fields = [];
+    let query = "status=true&";
+    const searchFields = ["categories", "name", "q"];
 
-    const searchFields = ["categories", "name"];
-
-    searchFields.map((field) => {
+    searchFields.forEach((field) => {
       if (searchParams.get(field)) {
         query += `${field}=${searchParams.get(field)}&`;
-        if (
-          searchParams.get(field) &&
-          searchParams.get(field).split(",").length > 0
-        ) {
-          searchParams
-            .get(field)
-            .split(",")
-            .map((el) => fields.push({ name: field, data: el }));
-        } else {
-          query += `${field}=&`;
-        }
       }
     });
 
     return query;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { partners, pagination } = await getPartners(`status=true`);
-      if (partners) setData(partners);
-      if (pagination) setPaginate(pagination);
-      setLoading(false);
-    };
-
-    fetchData().catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    const qry = queryBuild();
-
-    const fetchData = async (query) => {
-      const { partners, pagination } = await getPartners(query);
-      setPaginate(pagination);
-      setData(partners);
-      setLoading(false);
-    };
-
-    setLoading(true);
-    fetchData(qry).catch((error) => console.log(error));
-  }, [searchParams]);
+  const fetchData = async (queryStr) => {
+    const { partners, pagination } = await getPartners(queryStr);
+    setData(partners || []);
+    setPaginate(pagination || null);
+    setLoading(false);
+  };
 
   const nextpage = () => {
     const qry = queryBuild();
-
-    const next = async () => {
-      setLoading(true);
-      const { partners, pagination } = await getPartners(
-        `${qry}page=${paginate.nextPage}`
-      );
-      setData((bs) => [...bs, ...partners]);
-      setPaginate(pagination);
-      setLoading(false);
-    };
-
     if (paginate && paginate.nextPage) {
-      next().catch((error) => console.log(error));
+      setLoading(true);
+      getPartners(`${qry}page=${paginate.nextPage}`)
+        .then(({ partners, pagination }) => {
+          setData((prev) => [...prev, ...partners]);
+          setPaginate(pagination);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
     }
   };
 
-  if (loading === true && data.length <= 0) {
-    return <BlockLoad />;
-  }
+  useEffect(() => {
+    const qry = queryBuild();
+    setLoading(true);
+    fetchData(qry).catch((err) => console.log(err));
+  }, [searchParams]);
 
-  if (data && data.length <= 0) {
-    return <NotFound />;
-  }
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!paginate?.nextPage || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          nextpage();
+        }
+      },
+      { rootMargin: "100px" }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) observer.observe(currentRef);
+
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [paginate, loading]);
+
+  const clearAllFilters = () => {
+    router.push(pathname);
+  };
+
+  const removeFilter = (key, value) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const current = params.get(key)?.split(",") || [];
+
+    const updated = current.filter((item) => item !== value);
+    if (updated.length > 0) {
+      params.set(key, updated.join(","));
+    } else {
+      params.delete(key);
+    }
+
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  if (loading && data.length === 0) return <BlockLoad />;
+  if (!loading && data.length === 0) return <NotFound />;
 
   return (
     <>
-      <div className="partner-list">
-        <div className="row gy-4">
-          {data &&
-            data.length > 0 &&
-            data.map((el) => (
-              <div className="col-lg-3 col-md-3 col-sm-4 col-6" key={el._id}>
-                <Partner data={el} />
-              </div>
-            ))}
+      {/* ✅ FILTER HEADER */}
+      <div className=" mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          <div>
+            <strong>{paginate?.total || data.length}</strong> байгууллага байна
+          </div>
+
+          {["categories", "name", "q"].map((key) => {
+            const val = searchParams.get(key);
+            if (!val) return null;
+
+            return val.split(",").map((v) => (
+              <Tag
+                key={`${key}-${v}`}
+                closable
+                onClose={() => removeFilter(key, v)}
+                color="green"
+              >
+                {v}
+              </Tag>
+            ));
+          })}
+
+          {(searchParams.get("categories") || searchParams.get("name")) && (
+            <button
+              onClick={clearAllFilters}
+              className="btn btn-sm btn-outline-danger"
+            >
+              Цэвэрлэх
+            </button>
+          )}
         </div>
       </div>
-      {loading === true && <BlockLoad />}
-      {paginate && paginate.nextPage && (
+
+      {/* ✅ MAIN LIST */}
+      <div className="partner-list">
+        <div className="row gy-5">
+          {data.map((el) => (
+            <div className="col-lg-4 col-md-6 col-sm-6 col-12" key={el._id}>
+              <Partner data={el} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ✅ LOADING BLOCK */}
+      {loading && <BlockLoad />}
+
+      {/* ✅ SCROLL REF */}
+      {paginate?.nextPage && (
+        <div ref={loadMoreRef} style={{ height: 1 }}></div>
+      )}
+
+      {/* ✅ Fallback button */}
+      {paginate?.nextPage && (
         <div className="pagination">
-          <button className="more-page" onClick={() => nextpage()}>
+          <button className="more-page" onClick={nextpage}>
             Дараагийн хуудас
           </button>
         </div>

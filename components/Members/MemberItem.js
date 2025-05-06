@@ -3,10 +3,11 @@ import { Rate } from "antd";
 import base from "lib/base";
 import React from "react";
 import StarRating from "./Star";
+import Link from "next/link";
 
 const MemberItem = ({ data }) => {
   return (
-    <div className="member-item">
+    <Link href={`/members/${data._id}`} className="member-item">
       <div className="member-item__header">
         <div className="member-item__avatar">
           <ImageAvatar
@@ -25,20 +26,10 @@ const MemberItem = ({ data }) => {
         <span>{data.position}</span>
 
         <div className="member-item-rate">
-        <StarRating value={data.rating5Percent || 0} />
+          <StarRating value={data.rating5Percent || 0} />
         </div>
-
-        <div className="member-categories">
-          <div className="cat-list">
-            {data.category &&
-              data.category.map((cat) => (
-                <div className="info-cat-item">{cat.name}</div>
-              ))}
-          </div>
-        </div>
-      
       </div>
-    </div>
+    </Link>
   );
 };
 

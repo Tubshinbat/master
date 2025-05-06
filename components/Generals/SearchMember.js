@@ -6,10 +6,10 @@ import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const Search = () => {
+const SearchMember = ({ linkstart = "members" }) => {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const activeLink = pathname.split("/")[2] || "members";
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const { menus: treeData } = useMemberCategories();
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -24,9 +24,14 @@ const Search = () => {
   };
 
   const onSelect = (keys, info) => {
+    setSelectedCategory(info.node?._id);
     const selectedCategory = info.node?._id;
     if (selectedCategory) {
-      router.push(`/search/${activeLink}?categories=${selectedCategory}`);
+      router.push(
+        `/${linkstart}?categories=${selectedCategory}&q=${encodeURIComponent(
+          searchText.trim()
+        )}`
+      );
       setOpen(false);
     }
   };
@@ -51,7 +56,9 @@ const Search = () => {
   const handleSearch = () => {
     if (searchText.trim() !== "") {
       router.push(
-        `/search/${activeLink}?q=${encodeURIComponent(searchText.trim())}`
+        `/${linkstart}?categories=${selectedCategory}&q=${encodeURIComponent(
+          searchText.trim()
+        )}`
       );
     }
   };
@@ -65,7 +72,7 @@ const Search = () => {
   return (
     <>
       <div className="search-box">
-        <div className="container-fluid">
+        <div className="container">
           <div className="search-inner">
             <div className="search-filter" onClick={showDrawer}>
               <div className="search-filter-icon">
@@ -86,42 +93,6 @@ const Search = () => {
                 placeholder="Үсчин, Гоо сайхан, Сувилагч, Багш, Мэргэжилтэн...."
                 className="search-input-field"
               />
-              <div className="search-types">
-                <div className="search-type">
-                  <Link
-                    href="/search/members"
-                    className={
-                      "search-type-link" +
-                      (activeLink === "members" ? " active" : "")
-                    }
-                  >
-                    Гишүүн
-                  </Link>
-                </div>
-                <div className="search-type">
-                  <Link
-                    href="/search/organization"
-                    className={
-                      "search-type-link" +
-                      (activeLink === "organization" ? " active" : "")
-                    }
-                  >
-                    Байгууллага
-                  </Link>
-                </div>
-
-                <div className="search-type">
-                  <Link
-                    href="/search/products"
-                    className={
-                      "search-type-link" +
-                      (activeLink === "products" ? " active" : "")
-                    }
-                  >
-                    Бүтээгдэхүүн
-                  </Link>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -134,48 +105,6 @@ const Search = () => {
         open={open}
       >
         <div className="search-drawer">
-          <div className="search-drawer-item">
-            <div className="search-drawer-form">
-              <div className="search-drawer-label">Төрөл</div>
-              <div className="search-types">
-                <div className="search-type">
-                  <Link
-                    href="/search/members"
-                    className={
-                      "search-type-link" +
-                      (activeLink === "members" ? " active" : "")
-                    }
-                  >
-                    Гишүүн
-                  </Link>
-                </div>
-                <div className="search-type">
-                  <Link
-                    href="/search/organization"
-                    className={
-                      "search-type-link" +
-                      (activeLink === "organization" ? " active" : "")
-                    }
-                  >
-                    Байгууллага
-                  </Link>
-                </div>
-
-                <div className="search-type">
-                  <Link
-                    href="/search/products"
-                    className={
-                      "search-type-link" +
-                      (activeLink === "products" ? " active" : "")
-                    }
-                  >
-                    Бүтээгдэхүүн
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div className="search-drawer-item">
             <div className="search-drawer-form">
               <label className="search-drawer-label">Ажил, мэргэжил</label>
@@ -202,4 +131,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default SearchMember;

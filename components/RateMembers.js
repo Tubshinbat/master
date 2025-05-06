@@ -72,25 +72,38 @@ const RateMembers = ({ plusQuery = "plus=none" }) => {
 
   return (
     <>
-      <div className="member-list">
+      <div className="member-winer-list">
         <div className="row gy-4">
-          {data &&
-            data.map(
-              (el, index) =>
-                index <= 2 && (
-                  <div
-                    className="col-lg-4 col-md-4 col-sm-6 col-12"
-                    key={el._id}
-                  >
-                    <RateMember data={el} number={index + 1} />
-                  </div>
-                )
-            )}
+          {data && data[1] && (
+            <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+              <RateMember data={data[1]} number={2} />
+            </div>
+          )}
+          {data && data[0] && (
+            <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+              <RateMember data={data[0]} number={1} />
+            </div>
+          )}
+          {data && data[2] && (
+            <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+              <RateMember data={data[2]} number={3} />
+            </div>
+          )}
         </div>
       </div>
-      <div className="member-col-list">
+      <div className="member-col-list row gy-4 mt-4">
         {data &&
-          data.map((el, index) => index > 2 && <RateColMember data={el} />)}
+          data.map(
+            (el, index) =>
+              index > 2 && (
+                <div
+                  className="col-lg-6 col-md-12 col-sm-12 col-12"
+                  key={index}
+                >
+                  <RateColMember data={el} />{" "}
+                </div>
+              )
+          )}
       </div>
     </>
   );
