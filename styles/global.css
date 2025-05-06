@@ -426,6 +426,69 @@ header.header-top {
   color: #1b1b1b;
 }
 
+/* member item  */
+
+.member-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  min-height: 350px;
+  transition: all 0.3s;
+  border:1px solid #f0f0f0;
+}
+
+.member-item__avatar{
+  position: relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:120px;
+  height:120px;
+  border-radius: 50%;
+  border:1px solid #dfdfdf;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.member-item__avatar .member-img{
+  width:100%;
+  height:100%;
+  object-fit:cover !important;
+  border-radius: 50%;
+}
+
+.member-item__avatar .badge-img{
+  position: absolute;
+  width: 20px;
+  top:14px;
+  right: 0;
+  z-index: 3;
+}
+
+.member-item__body{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.member-item__body .member-name{
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 0px;
+}
+
+.member-item__body span{
+  font-size: 0.8rem;
+  color: #7e7e7e;
+  font-weight: 500;
+}
+
+
 /* notfound */
 
 .notFound {
@@ -464,4 +527,22 @@ header.header-top {
   font-size: 14px;
   text-decoration: none;
   color: #222222;
+}
+
+.custom-star .ant-rate-star-full .ant-rate-star-second,
+.custom-star .ant-rate-star-half .ant-rate-star-first {
+  fill: #fadb14 !important; /* Шар өнгө */
+}
+
+.custom-star .ant-rate-star-zero .ant-rate-star-first,
+.custom-star .ant-rate-star-zero .ant-rate-star-second {
+  fill: #e4e4e4 !important; /* Саарал өнгө */
+}
+.custom-star .ant-rate-star-full svg,
+.custom-star .ant-rate-star-half svg {
+  fill: #fadb14 !important; /* шар */
+}
+
+.custom-star .ant-rate-star-zero svg {
+  fill: #e4e4e4 !important; /* саарал */
 }
