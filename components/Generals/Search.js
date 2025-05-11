@@ -26,7 +26,7 @@ const Search = () => {
   const onSelect = (keys, info) => {
     const selectedCategory = info.node?._id;
     if (selectedCategory) {
-      router.push(`/search/${activeLink}?categories=${selectedCategory}`);
+      router.push(`/${activeLink}?categories=${selectedCategory}`);
       setOpen(false);
     }
   };
@@ -50,9 +50,7 @@ const Search = () => {
 
   const handleSearch = () => {
     if (searchText.trim() !== "") {
-      router.push(
-        `/search/${activeLink}?q=${encodeURIComponent(searchText.trim())}`
-      );
+      router.push(`/${activeLink}?q=${encodeURIComponent(searchText.trim())}`);
     }
   };
 
@@ -89,7 +87,7 @@ const Search = () => {
               <div className="search-types">
                 <div className="search-type">
                   <Link
-                    href="/search/members"
+                    href="/members"
                     className={
                       "search-type-link" +
                       (activeLink === "members" ? " active" : "")
@@ -100,7 +98,7 @@ const Search = () => {
                 </div>
                 <div className="search-type">
                   <Link
-                    href="/search/organization"
+                    href="/partners"
                     className={
                       "search-type-link" +
                       (activeLink === "organization" ? " active" : "")
@@ -112,7 +110,7 @@ const Search = () => {
 
                 <div className="search-type">
                   <Link
-                    href="/search/products"
+                    href="/products"
                     className={
                       "search-type-link" +
                       (activeLink === "products" ? " active" : "")
@@ -140,7 +138,7 @@ const Search = () => {
               <div className="search-types">
                 <div className="search-type">
                   <Link
-                    href="/search/members"
+                    href="/members"
                     className={
                       "search-type-link" +
                       (activeLink === "members" ? " active" : "")
@@ -151,10 +149,10 @@ const Search = () => {
                 </div>
                 <div className="search-type">
                   <Link
-                    href="/search/organization"
+                    href="/partners"
                     className={
                       "search-type-link" +
-                      (activeLink === "organization" ? " active" : "")
+                      (activeLink === "partners" ? " active" : "")
                     }
                   >
                     Байгууллага
@@ -163,7 +161,7 @@ const Search = () => {
 
                 <div className="search-type">
                   <Link
-                    href="/search/products"
+                    href="/products"
                     className={
                       "search-type-link" +
                       (activeLink === "products" ? " active" : "")

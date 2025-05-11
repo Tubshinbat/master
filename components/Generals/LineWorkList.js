@@ -33,7 +33,7 @@ const LineWorkList = ({ works }) => {
                 className="work-line-item"
                 style={{ width: "auto" }} // ✨ width auto болгож байна
               >
-                <Link href={`/search/${activeLink}?categories=${item._id}`}>
+                <Link href={`/${activeLink}?categories=${item._id}`}>
                   <span>{item.name}</span>
                 </Link>
               </SwiperSlide>
