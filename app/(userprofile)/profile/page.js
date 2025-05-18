@@ -22,19 +22,6 @@ export default function RootLayout({ children }) {
   const [progress, setProgress] = useState(0);
   const [loader, setLoader] = useState(false);
 
-  if (contentLoad || !user)
-    return (
-      <>
-        <section className="profile-section">
-          <div className="container">
-            <div className="row">
-              <Loader />
-            </div>
-          </div>
-        </section>
-      </>
-    );
-
   // Config
   const uploadImage = async (options) => {
     const { onSuccess, onError, file, onProgress } = options;
@@ -89,10 +76,23 @@ export default function RootLayout({ children }) {
   );
 
   useEffect(() => {
-    if (user && user.picture) {
+    if (user && user?.picture) {
       setImageUrl({ url: base.cdnUrl + "/350x350/" + user.picture });
     }
   }, [user]);
+
+  if (contentLoad || !user)
+    return (
+      <>
+        <section className="profile-section">
+          <div className="container">
+            <div className="row">
+              <Loader />
+            </div>
+          </div>
+        </section>
+      </>
+    );
 
   return (
     <>

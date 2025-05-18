@@ -15,20 +15,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu } from "antd";
-import Image from "components/Generals/Image";
+
 import ImageAvatar from "components/Generals/ImageAvatar";
 import Loader from "components/Generals/Loader";
-import NotFound from "components/Generals/Notfound";
-import PageSide from "components/Generals/PageSide";
-import MemberDetials from "components/MemberDetials";
+import MapBox from "components/Generals/Mapbox";
+
 import StarRating from "components/Members/Star";
 import base from "lib/base";
-import { getMember } from "lib/getFetchers";
+import { getExperience, getMember } from "lib/getFetchers";
 import { ArrowLeft, Mail, PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+
+import { Progress, Rate, Typography, Row, Col, Divider } from "antd";
+import RatingSummary from "components/Generals/RatingSummary";
+
+const { Title, Text } = Typography;
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -36,6 +40,8 @@ export default function Page({ params }) {
   const [alternativeMembers, setAlternativeMembers] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("about");
+  const [experiences, setExperiences] = useState([]);
+  const [ratingStats, setRatingStats] = useState(null);
 
   const contactRender = (link) => {
     let icon = <FontAwesomeIcon icon={faLink} />;
@@ -90,7 +96,12 @@ export default function Page({ params }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { member, alternativeMembers } = await getMember(params.id);
+      const { member, alternativeMembers, ratingStats } = await getMember(
+        params.id
+      );
+      const { experiences } = await getExperience(`pkey=${params.id}`);
+      setRatingStats(ratingStats);
+      setExperiences(experiences);
       setData(member);
       setAlternativeMembers(alternativeMembers);
       setLoading(false);
@@ -168,14 +179,16 @@ export default function Page({ params }) {
                   />
                   <div className="tab-content mt-4">
                     {currentTab === "about" && (
-                      <div
-                        className="about"
-                        dangerouslySetInnerHTML={{ __html: data.about }}
-                      ></div>
+                      <>
+                        <div
+                          className="about"
+                          dangerouslySetInnerHTML={{ __html: data.about }}
+                        ></div>
+                      </>
                     )}
 
                     {currentTab === "awards" && (
-                      <div>
+                      <div className="tab-content">
                         {/* Шагналуудыг data.about эсвэл тусдаа data.awards талбараас харуулж болно */}
                         <h4>Шагналууд:</h4>
                         <ul>
@@ -187,32 +200,84 @@ export default function Page({ params }) {
                     )}
 
                     {currentTab === "experience" && (
-                      <div>
+                      <div className="tab-content">
                         <h4>Ажлын туршлага:</h4>
-                        <ul>
+                        <ul className="experience-list">
                           {JSON.parse(data.experience || "[]").map(
                             (exp, index) => (
-                              <li key={index}>
-                                <strong>{exp.companyName}</strong> —{" "}
-                                {exp.position} ({exp.date})
+                              <li
+                                key={index}
+                                style={{ marginBottom: "12px" }}
+                                className="experience-item"
+                              >
+                                {" "}
+                                <div className="experience-item-company">
+                                  <strong>{exp.companyName}</strong>{" "}
+                                  <span>{exp.about}</span>
+                                </div>{" "}
+                                <div className="experience-item-position">
+                                  <p> {exp.position} </p>{" "}
+                                  <span> ({exp.date})</span>
+                                </div>
                                 <br />
-                                <span>{exp.about}</span>
                               </li>
                             )
                           )}
                         </ul>
+                        {currentTab === "experience" && (
+                          <div className="tab-content">
+                            <ul className="experience-list">
+                              {(Array.isArray(experiences)
+                                ? experiences
+                                : JSON.parse(experiences || "[]")
+                              ).map((exp, index) => (
+                                <li
+                                  key={index}
+                                  style={{ marginBottom: "12px" }}
+                                  className="experience-item"
+                                >
+                                  <div className="experience-item-company">
+                                    <strong>{exp.companyName}</strong>
+                                    <span>{exp.about}</span>
+                                  </div>
+                                  <div className="experience-item-position">
+                                    <p>{exp.position}</p>{" "}
+                                    <span>
+                                      ({exp.startDate}
+                                      {exp.endDate
+                                        ? ` - ${exp.endDate}`
+                                        : " - Одоог хүртэл"}
+                                      )
+                                    </span>
+                                  </div>
+                                  <br />
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     )}
 
-                    {currentTab === "ratings" && (
-                      <div>
-                        <h4>Үнэлгээний түүх:</h4>
-                      </div>
+                    {currentTab === "ratings" && ratingStats && (
+                      <RatingSummary
+                        rating={data.rating}
+                        ratingCount={data.ratingCount}
+                        ratingStats={ratingStats}
+                      />
                     )}
                   </div>
                 </div>
                 <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12">
                   <div className="profile-sidebar">
+                    <div className="profile-side">
+                      <div className="profile-side-head">
+                        <h6> Байршил </h6>
+                      </div>
+                      <div className="profile-side-body">
+                        <MapBox location={data.location} />
+                      </div>
+                    </div>
                     <div className="profile-side">
                       <div className="profile-side-head">
                         <h6> Холбоо барих </h6>

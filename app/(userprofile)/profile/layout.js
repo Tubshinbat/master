@@ -10,33 +10,5 @@ export default function RootLayout({ children }) {
   const { contentLoad, setContentLoad } = useNotificationContext();
   const [cookies, removeCookie] = useCookies(["nodetoken"]);
 
-  useEffect(() => {
-    setContentLoad(true);
-    const checkData = async () => {
-      await memberCheck(cookies.nodetoken);
-      setContentLoad(false);
-    };
-    checkData().catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    setContentLoad(false);
-    const checkData = async () => {
-      const result = await memberCheck(cookies.nodetoken);
-      if (!user) {
-        logOut();
-        redirect("/login");
-      }
-    };
-
-    if (!cookies.nodetoken || !user) redirect("/login");
-
-    if (cookies.nodetoken) checkData().catch((error) => console.log(error));
-    else {
-      logOut();
-      redirect("/login");
-    }
-  }, [cookies, cookies.nodetoken, user]);
-
   return <>{children}</>;
 }

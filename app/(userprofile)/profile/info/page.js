@@ -27,29 +27,33 @@ export default function RootLayout({ children }) {
   const router = useRouter();
   const [form] = Form.useForm();
 
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [latLng, setLatLng] = useState({ lat: null, lng: null });
+
   const handleChange = (event) => {
     form.setFieldsValue({ about: event });
   };
 
   const handleEdit = async (values) => {
-    const data = {
-      ...values,
-    };
-
-    if (data.category.length === 0) data.category = [];
-
+    const data = { ...values };
+    if (!data.category?.length) data.category = [];
+    if (latLng.lat && latLng.lng) {
+      data.location = {
+        type: "Point",
+        coordinates: [latLng.lng, latLng.lat],
+      };
+    }
     const sendData = convertFromdata(data);
     if (user) {
       setLoading(true);
       try {
         const { update } = await updateUser(user, sendData);
-        if (update.data.data) {
-          setUser({ ...update.data.data });
-        }
-        setLoading(false);
+        if (update.data.data) setUser({ ...update.data.data });
         setAlert("Мэдээлэл амжилтай шинжлэгдлээ");
       } catch (error) {
         setError(error);
+      } finally {
+        setLoading(false);
       }
     } else setError("Холболт салсан байна");
   };
@@ -58,6 +62,34 @@ export default function RootLayout({ children }) {
     setValue(newValue);
   };
 
+  useEffect(() => {
+    const fetchDatas = async () => {
+      const { partners } = await getPartners(`status=true`);
+      const { categories } = await getMemberCategories(``);
+      setCategories(categories);
+      if (partners) {
+        let data = [{ value: null, label: "Харьяалалгүй" }];
+        const pdata = partners.map((el) => ({
+          value: el._id,
+          label: el.name,
+        }));
+        setPartners(data.concat(pdata));
+      }
+    };
+    fetchDatas().catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      form.setFieldsValue({ ...user });
+      if (user.location?.coordinates) {
+        setLatLng({
+          lat: user.location.coordinates[1],
+          lng: user.location.coordinates[0],
+        });
+      }
+    }
+  }, [user]);
   if (contentLoad || !user)
     return (
       <>
@@ -70,33 +102,6 @@ export default function RootLayout({ children }) {
         </section>
       </>
     );
-
-  useEffect(() => {
-    const fetchDatas = async () => {
-      const { partners } = await getPartners(`status=true`);
-      const { categories } = await getMemberCategories(``);
-      setCategories(categories);
-      if (partners) {
-        let data = [];
-        data.push({ value: null, label: "Харьяалалгүй" });
-        const pdata = partners.map((el) => ({
-          value: el._id,
-          label: el.name,
-        }));
-        data = data.concat(pdata);
-
-        setPartners(data);
-      }
-    };
-
-    fetchDatas().catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      form.setFieldsValue({ ...user });
-    }
-  }, [user]);
 
   return (
     <>
@@ -202,12 +207,13 @@ export default function RootLayout({ children }) {
                             label="Харьяалагддаг байгууллага"
                           >
                             <Select
+                              mode="multiple" // ✅ зөв синтакс
                               showSearch
                               optionFilterProp="label"
                               style={{ width: "100%" }}
                               placeholder="Харьяалагддаг байгууллага сонгоно уу"
                               options={partners}
-                            ></Select>
+                            />
                           </Form.Item>
                         </div>
                         <div className="col-lg-6">
@@ -247,6 +253,35 @@ export default function RootLayout({ children }) {
                               placeholder="Утасны дугаараа оруулна уу"
                               style={{ width: "100%" }}
                             />
+                          </Form.Item>
+                        </div>
+                        <div className="col-lg-6">
+                          <Form.Item label="Газрын байршил">
+                            <div style={{ display: "flex", gap: "8px" }}>
+                              <Input
+                                placeholder="lng"
+                                value={latLng.lng}
+                                onChange={(e) =>
+                                  setLatLng({
+                                    ...latLng,
+                                    lng: parseFloat(e.target.value),
+                                  })
+                                }
+                              />
+                              <Input
+                                placeholder="lat"
+                                value={latLng.lat}
+                                onChange={(e) =>
+                                  setLatLng({
+                                    ...latLng,
+                                    lat: parseFloat(e.target.value),
+                                  })
+                                }
+                              />
+                              <Button onClick={() => setIsMapModalOpen(true)}>
+                                Газраа сонгох
+                              </Button>
+                            </div>
                           </Form.Item>
                         </div>
                         <div className="col-lg-12">

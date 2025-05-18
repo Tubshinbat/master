@@ -10,16 +10,6 @@ export default function Page() {
   const { userRegister, setIsRedirect, isRedirect } = useAuthContext();
   const { contentLoad } = useNotificationContext();
 
-  useEffect(() => {
-    return () => {
-      setIsRedirect(false);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isRedirect === true) redirect("/login");
-  }, [isRedirect]);
-
   const onFinishFailed = (errorInfo) => {
     toastControl("error", errorInfo);
   };

@@ -4,6 +4,7 @@ import { useNotificationContext } from "./notificationContext";
 import axios from "axios-base";
 import { useCookies } from "react-cookie";
 import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
@@ -13,36 +14,24 @@ export const AuthProvider = ({ children }) => {
   const [isRedirect, setIsRedirect] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const memberCheck = (token) => {
-    axios
-      .post("members/check", {
-        withCredentials: true,
-        header: { Cookie: `nodetoken=${token}` },
-      })
-      .then((result) => {
-        !user && setUser(result.data.user);
-      })
-      .catch(() => {
-        logOut();
-      });
-  };
-
-  const checkToken = (token) => {
-    axios
-      .post("members/checktoken", {
-        withCredentials: true,
-        headers: { Cookie: `nodetoken=${token}` },
-      })
-      .then((result) => {
-        if (!user) {
-          setUser(result.data.user);
-        }
-      })
-      .catch((error) => {
-        logOut();
-      });
-  };
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const res = await axios.post("/members/check", null, {
+          withCredentials: true,
+        });
+        console.log(res.data);
+        setUser(res.data.user);
+      } catch (e) {
+        setUser(null);
+      } finally {
+        setIsChecking(false); // ❗энэ нь байхгүй state байж болно
+      }
+    };
+    checkToken();
+  }, []);
 
   const logOut = async () => {
     removeCookie("nodetoken");
@@ -60,6 +49,7 @@ export const AuthProvider = ({ children }) => {
         setUser(result.data.user);
         setAlert("Амжилттай нэвтэрлээ");
         setContentLoad(false);
+        router.push("/profile");
       })
       .catch((error) => {
         setError(error);
@@ -102,25 +92,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const checkUser = async () => {
-    const token = cookies.nodetoken;
-    if (!token) {
-      setError("Уучлаарай нэвтэрч орно уу");
-      return false;
-    }
-
-    try {
-      const result = await axios.get(`users/userdata`, {
-        withCredentials: true,
-        headers: { Cookie: `nodetoken=${token}` },
-      });
-
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -128,7 +99,7 @@ export const AuthProvider = ({ children }) => {
         userRegister,
         setIsRedirect,
         isRedirect,
-        memberCheck,
+
         user,
         setUser,
         logOut,
