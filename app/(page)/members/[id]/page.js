@@ -170,7 +170,7 @@ export default function Page({ params }) {
           <div className="profile-content">
             <div className="container">
               <div className="row">
-                <div className="col-xl-9 col-lg-9 col-md-12 col-sm-12">
+                <div className="col-xl-8 col-lg-8 col-md-12 col-sm-12">
                   <Menu
                     mode="horizontal"
                     selectedKeys={[currentTab]}
@@ -268,8 +268,28 @@ export default function Page({ params }) {
                     )}
                   </div>
                 </div>
-                <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12">
+                <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                   <div className="profile-sidebar">
+                    <div className="profile-side">
+                      <div className="profile-side-head">
+                        <h6> Ажил мэргэжлийн индекс </h6>
+                      </div>
+                      <div className="profile-side-body">
+                        <div className="member-index">
+                          {data.category && data.category.length > 0 ? (
+                            data.category.map((category, index) => (
+                              <div className="member-index-item" key={index}>
+                                <span className="index-name">
+                                  {category.name}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <p>Ажил мэргэжлийн индекс байхгүй байна.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                     <div className="profile-side">
                       <div className="profile-side-head">
                         <h6> Байршил </h6>
