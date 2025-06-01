@@ -33,7 +33,7 @@ const PartnerDetails = ({ data, members, coursies }) => {
   const contactRender = (link) => {
     let icon = <FontAwesomeIcon icon={faLink} />;
 
-    switch (link.name.toLowerCase()) {
+    switch (link?.name?.toLowerCase()) {
       case "facebook": {
         icon = <FontAwesomeIcon icon={faFacebookF} />;
         break;
@@ -239,15 +239,15 @@ const PartnerDetails = ({ data, members, coursies }) => {
                         data.links.map((link) => (
                           <a
                             href={
-                              link.name.toLowerCase() === "phone"
+                              link?.name?.toLowerCase() === "phone"
                                 ? "callto:" + link.url
-                                : link.name.toLowerCase() === "email"
-                                ? "mailto:" + link.url
-                                : link.url
+                                : link?.name?.toLowerCase() === "email"
+                                ? "mailto:" + link?.url
+                                : link?.url
                             }
                             target="_blank"
                             className="member-contact-item"
-                            key={link.url}
+                            key={link?.url}
                           >
                             {contactRender(link)}
                           </a>
