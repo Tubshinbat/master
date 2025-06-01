@@ -236,22 +236,21 @@ const PartnerDetails = ({ data, members, coursies }) => {
 
                     <div className="contact-links">
                       {data.links &&
-                        JSON.parse(data.links).map((link) => (
-                          <>
-                            <a
-                              href={
-                                link.name.toLowerCase() === "phone"
-                                  ? "callto:" + link.link
-                                  : link.name.toLowerCase() === "email"
-                                  ? "mailto:" + link.link
-                                  : link.link
-                              }
-                              target="_blank"
-                              className="member-contact-item"
-                            >
-                              {contactRender(link)}
-                            </a>
-                          </>
+                        data.links.map((link) => (
+                          <a
+                            href={
+                              link.name.toLowerCase() === "phone"
+                                ? "callto:" + link.url
+                                : link.name.toLowerCase() === "email"
+                                ? "mailto:" + link.url
+                                : link.url
+                            }
+                            target="_blank"
+                            className="member-contact-item"
+                            key={link.url}
+                          >
+                            {contactRender(link)}
+                          </a>
                         ))}
                     </div>
                   </div>

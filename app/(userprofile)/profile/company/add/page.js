@@ -2,12 +2,11 @@
 
 import Loader from "components/Generals/Loader";
 import Side from "components/Userprofile/Side";
-import { useAuthContext } from "context/authContext";
 import { useNotificationContext } from "context/notificationContext";
 import { useEffect, useState } from "react";
-import { Button, Form, Input, InputNumber, Select, TreeSelect } from "antd";
+import { Button, Form, Input, InputNumber, TreeSelect } from "antd";
 import base from "lib/base";
-import { createUser, updatePartner } from "lib/actionFetch";
+import { createPartner } from "lib/actionFetch"; // CREATE API энд
 import { getMemberCategories, getPartners } from "lib/getFetchers";
 import { Editor } from "@tinymce/tinymce-react";
 import TextArea from "antd/es/input/TextArea";
@@ -15,15 +14,21 @@ import axios from "axios-base";
 import { useRouter } from "next/navigation";
 import { convertFromdata } from "lib/check";
 import Spinner from "components/Generals/Spinner";
+import LinksModal from "components/Userprofile/LinksModal";
+import UploadImage from "components/Userprofile/UploadImage";
+import MapPickerModal from "components/Generals/MapPickerModal";
 
-export default function RootLayout({ children }) {
-  const { user, setUser } = useAuthContext();
+export default function AddPartnerPage() {
   const { contentLoad, setError, setAlert } = useNotificationContext();
   const [partners, setPartners] = useState([]);
-  const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState();
+  const [links, setLinks] = useState([]);
+  const [isLinksModalOpen, setIsLinksModalOpen] = useState(false);
+  const [logo, setLogo] = useState(null);
+  const [cover, setCover] = useState(null);
+
   const router = useRouter();
   const [form] = Form.useForm();
 
@@ -34,9 +39,15 @@ export default function RootLayout({ children }) {
     form.setFieldsValue({ about: event });
   };
 
-  const handleEdit = async (values) => {
-    const data = { ...values };
+  const handleCreate = async (values) => {
+    const data = {
+      ...values,
+      links: links,
+      logo: logo?.name, // backend талдаа зөвхөн нэрийг дамжуулна
+      cover: cover?.name,
+    };
     if (!data.category?.length) data.category = [];
+
     if (latLng.lat && latLng.lng) {
       data.location = {
         type: "Point",
@@ -44,18 +55,18 @@ export default function RootLayout({ children }) {
       };
     }
     const sendData = convertFromdata(data);
-    if (user) {
-      setLoading(true);
-      try {
-        const { update } = await updatePartner(id, sendData);
-        if (update.data.data) setUser({ ...update.data.data });
-        setAlert("Мэдээлэл амжилтай шинжлэгдлээ");
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
+    setLoading(true);
+    try {
+      const res = await createPartner(sendData);
+      if (res?.data?.data) {
+        setAlert("Амжилттай хадгаллаа");
+        router.push("/profile/company");
       }
-    } else setError("Холболт салсан байна");
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onChange = (newValue) => {
@@ -67,41 +78,27 @@ export default function RootLayout({ children }) {
       const { partners } = await getPartners(`status=true`);
       const { categories } = await getMemberCategories(``);
       setCategories(categories);
-      if (partners) {
-        let data = [{ value: null, label: "Харьяалалгүй" }];
-        const pdata = partners.map((el) => ({
-          value: el._id,
-          label: el.name,
-        }));
-        setPartners(data.concat(pdata));
-      }
+      let data = [{ value: null, label: "Харьяалалгүй" }];
+      const pdata = partners.map((el) => ({
+        value: el._id,
+        label: el.name,
+      }));
+      setPartners(data.concat(pdata));
     };
     fetchDatas().catch(console.error);
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      form.setFieldsValue({ ...user });
-      if (user.location?.coordinates) {
-        setLatLng({
-          lat: user.location.coordinates[1],
-          lng: user.location.coordinates[0],
-        });
-      }
-    }
-  }, [user]);
-  if (contentLoad || !user)
+  if (contentLoad) {
     return (
-      <>
-        <section className="profile-section">
-          <div className="container">
-            <div className="row">
-              <Loader />
-            </div>
+      <section className="profile-section">
+        <div className="container">
+          <div className="row">
+            <Loader />
           </div>
-        </section>
-      </>
+        </div>
+      </section>
     );
+  }
 
   return (
     <>
@@ -116,62 +113,34 @@ export default function RootLayout({ children }) {
                 {loading && <Spinner />}
                 <div className="pro-box user-form-box">
                   <div className="user-form-header">
-                    <h4> Хувийн мэдээлэл </h4>
+                    <h4>Шинэ компани нэмэх</h4>
                   </div>
                   <div className="user-form-control">
-                    <Form
-                      name="basic"
-                      layout="vertical"
-                      initialValues={{
-                        remember: true,
-                      }}
-                      form={form}
-                    >
+                    <Form name="basic" layout="vertical" form={form}>
                       <div className="row">
-                        <div className="col-lg-6">
-                          <Form.Item
-                            name="lastName"
-                            label="Овог"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Овог нэрээ оруулна уу!",
-                              },
-                            ]}
-                          >
-                            <Input size="middle" placeholder="Овог" />
-                          </Form.Item>
-                        </div>
-                        <div className="col-lg-6">
+                        <div className="col-lg-12">
                           <Form.Item
                             name="name"
-                            label="Нэр"
+                            label="Компаний нэр"
                             rules={[
-                              {
-                                required: true,
-                                message: "Нэрээ оруулна уу!",
-                              },
+                              { required: true, message: "Нэр оруулна уу!" },
                             ]}
                           >
                             <Input size="middle" placeholder="Нэр" />
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-12">
                           <Form.Item
                             name="category"
                             label="Салбар"
                             rules={[
-                              {
-                                required: true,
-                                message: "Салбар сонгоно уу!",
-                              },
+                              { required: true, message: "Салбар сонгоно уу!" },
                             ]}
                           >
                             <TreeSelect
                               showSearch
-                              style={{
-                                width: "100%",
-                              }}
+                              style={{ width: "100%" }}
                               value={value}
                               dropdownStyle={{
                                 maxHeight: 400,
@@ -188,73 +157,47 @@ export default function RootLayout({ children }) {
                           </Form.Item>
                         </div>
                         <div className="col-lg-6">
-                          <Form.Item
-                            name="position"
-                            label="Цол гуншин"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Цол гуншин оруулна уу!",
-                              },
-                            ]}
-                          >
-                            <Input size="middle" placeholder="Цол гуншин" />
+                          <Form.Item label="Лого">
+                            <UploadImage value={logo} onChange={setLogo} />
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-6">
-                          <Form.Item
-                            name="partner"
-                            label="Харьяалагддаг байгууллага"
-                          >
-                            <Select
-                              mode="multiple" // ✅ зөв синтакс
-                              showSearch
-                              optionFilterProp="label"
-                              style={{ width: "100%" }}
-                              placeholder="Харьяалагддаг байгууллага сонгоно уу"
-                              options={partners}
-                            />
+                          <Form.Item label="Cover зураг">
+                            <UploadImage value={cover} onChange={setCover} />
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-6">
-                          {" "}
                           <Form.Item
                             name="email"
                             label="Имэйл хаяг"
                             hasFeedback
                             rules={[
-                              {
-                                required: true,
-                                message: "Тус талбарыг заавал бөглөнө үү",
-                              },
-                              {
-                                type: "email",
-                                message: "Имэйл хаяг буруу байна!",
-                              },
+                              { required: true, message: "Имэйл оруулна уу" },
+                              { type: "email", message: "Имэйл буруу байна!" },
                             ]}
                           >
-                            <Input placeholder="Имэйл хаягаа оруулна уу" />
+                            <Input placeholder="Имэйл" />
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-6">
-                          {" "}
                           <Form.Item
                             label="Утасны дугаар"
                             name="phoneNumber"
                             rules={[
-                              {
-                                required: true,
-                                message: "Тус талбарыг заавал бөглөнө үү",
-                              },
+                              { required: true, message: "Утас оруулна уу!" },
                             ]}
                             hasFeedback
                           >
                             <InputNumber
-                              placeholder="Утасны дугаараа оруулна уу"
+                              placeholder="Утас"
                               style={{ width: "100%" }}
                             />
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-6">
                           <Form.Item label="Газрын байршил">
                             <div style={{ display: "flex", gap: "8px" }}>
@@ -284,17 +227,37 @@ export default function RootLayout({ children }) {
                             </div>
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-12">
-                          <Form.Item label="Товч танилцуулга" name="shortAbout">
-                            <TextArea
-                              placeholder="Товч танилцуулга"
-                              autoSize={{
-                                minRows: 2,
-                                maxRows: 6,
-                              }}
-                            />
+                          <Form.Item label="Холбоо барих линкүүд">
+                            <div style={{ marginBottom: 8 }}>
+                              <Button onClick={() => setIsLinksModalOpen(true)}>
+                                Холбоос нэмэх
+                              </Button>
+                            </div>
+
+                            <ul>
+                              {links.map((link, idx) => (
+                                <li key={idx}>
+                                  {link.name} - {link.url}
+                                  <Button
+                                    type="link"
+                                    danger
+                                    size="small"
+                                    onClick={() => {
+                                      setLinks(
+                                        links.filter((_, i) => i !== idx)
+                                      );
+                                    }}
+                                  >
+                                    Устгах
+                                  </Button>
+                                </li>
+                              ))}
+                            </ul>
                           </Form.Item>
                         </div>
+
                         <div className="col-lg-12">
                           <Form.Item
                             label="Дэлгэрэнгүй танилцуулга"
@@ -305,7 +268,7 @@ export default function RootLayout({ children }) {
                             rules={[
                               {
                                 required: true,
-                                message: "Тус талбарыг заавал бөглөнө үү",
+                                message: "Дэлгэрэнгүй оруулна уу",
                               },
                             ]}
                           >
@@ -319,8 +282,8 @@ export default function RootLayout({ children }) {
 
                                 toolbar:
                                   "undo redo | mybutton | addPdf |  image |  fontselect fontsizeselect formatselect blockquote  | bold italic forecolor  backcolor | \
-                                  alignleft aligncenter alignright alignjustify | \
-                                  bullist numlist outdent indent | removeformat | help | link  | quickbars | media | code | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
+                                   alignleft aligncenter alignright alignjustify | \
+                                   bullist numlist outdent indent | removeformat | help | link  | quickbars | media | code | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
                                 file_picker_types: "image",
                                 tinydrive_token_provider: `${base.apiUrl}/users/jwt`,
                                 automatic_uploads: false,
@@ -394,12 +357,13 @@ export default function RootLayout({ children }) {
                                 },
                               }}
                               onEditorChange={(event) => handleChange(event)}
-                            ></Editor>
+                            />
                           </Form.Item>
                         </div>
                       </div>
                     </Form>
                   </div>
+
                   <div className="user-form-bottom">
                     <Button
                       key="submit"
@@ -408,23 +372,17 @@ export default function RootLayout({ children }) {
                       onClick={() => {
                         form
                           .validateFields()
-                          .then((values) => {
-                            handleEdit(values);
-                          })
-                          .catch((info) => {
-                            // console.log(info);
-                          });
+                          .then(handleCreate)
+                          .catch(console.error);
                       }}
                     >
                       Хадгалах
                     </Button>
 
                     <Button
-                      key="submit"
-                      htmlType="submit"
-                      onClick={() => {
-                        router.back();
-                      }}
+                      key="back"
+                      htmlType="button"
+                      onClick={() => router.back()}
                     >
                       Буцах
                     </Button>
@@ -435,6 +393,20 @@ export default function RootLayout({ children }) {
           </div>
         </div>
       </section>
+      <LinksModal
+        open={isLinksModalOpen}
+        onCancel={() => setIsLinksModalOpen(false)}
+        onAdd={(link) => {
+          setLinks([...links, link]);
+          setIsLinksModalOpen(false);
+        }}
+      />
+      <MapPickerModal
+        open={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        latLng={latLng}
+        setLatLng={setLatLng}
+      />
     </>
   );
 }

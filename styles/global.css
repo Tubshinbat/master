@@ -1261,6 +1261,12 @@ header.header-top {
   border-radius: 5px;
 }
 
+.card-link {
+  text-decoration: none;
+  color: #1b1b1b;
+  font-weight: 600;
+}
+
 /* -------------------------------
 -------------- Footer  ------------
 ------------------------------- */

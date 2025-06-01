@@ -48,6 +48,17 @@ const Side = () => {
             </li>
             <li>
               <Link
+                href="/profile/company"
+                className={`${"/profile/company" === pathname && "active"}`}
+              >
+                <div className="menu-icon">
+                  <FontAwesomeIcon icon={faBuilding} />
+                </div>
+                Миний компани
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/profile/participation"
                 className={`${
                   "/profile/participation" === pathname && "active"
