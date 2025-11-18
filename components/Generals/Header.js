@@ -6,6 +6,7 @@ import { useAuthContext } from "context/authContext";
 import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
 import { useState } from "react";
+import { UserRound } from "lucide-react";
 
 const Header = ({ info, menus }) => {
   const { user } = useAuthContext();
@@ -73,12 +74,21 @@ const Header = ({ info, menus }) => {
         <div className="container-fluid">
           <div className="header-inner">
             <div className="header-left">
-              <div className="header__burger" onClick={toggleMenu}>
-                <div className="burger__lines">
-                  <span className="burger__line"></span>
-                  <span className="burger__line"></span>
-                  <span className="burger__line"></span>
+              <div className="header-burger-logo">
+                <div className="header__burger" onClick={toggleMenu}>
+                  <div className="burger__lines">
+                    <span className="burger__line"></span>
+                    <span className="burger__line"></span>
+                    <span className="burger__line"></span>
+                  </div>
                 </div>
+                <Link
+                  href={user ? "/profile" : "/login"}
+                  aria-label="Profile"
+                  className="mobile-profile-btn"
+                >
+                  <UserRound size={22} strokeWidth={2.2} />
+                </Link>
               </div>
               <div className="logo">
                 <Link href="/">

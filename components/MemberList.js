@@ -18,27 +18,33 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
   const loadMoreRef = useRef(null);
 
   const queryBuild = () => {
-    let query = "status=true&";
-    let fields = [];
-
+    const params = ["status=true"];
     const searchFields = ["categories", "name", "q"];
+
     searchFields.forEach((field) => {
-      if (searchParams.get(field)) {
-        query += `${field}=${searchParams.get(field)}&`;
-        const values = searchParams.get(field).split(",");
-        if (values.length > 0) {
-          values.forEach((el) => fields.push({ name: field, data: el }));
-        }
+      const value = searchParams.get(field);
+      if (value) {
+        params.push(`${field}=${value}`);
       }
     });
 
-    return query;
+    return params;
   };
 
-  const fetchData = async (queryStr) => {
-    const { members, pagination } = await getMembers(
-      queryStr + "&" + plusQuery
-    );
+  const buildQueryString = (baseSegments, extraSegments = []) => {
+    const segments = [...baseSegments, ...extraSegments];
+    const shouldAppendPlus = !searchParams.get("q") && plusQuery;
+    if (shouldAppendPlus) {
+      segments.push(plusQuery);
+    }
+
+    return segments.filter(Boolean).join("&");
+  };
+
+  const fetchData = async (baseSegments) => {
+    const finalQuery = buildQueryString(baseSegments);
+    console.log(finalQuery);
+    const { members, pagination } = await getMembers(finalQuery);
     setData(members || []);
     setPaginate(pagination || null);
     setLoading(false);
@@ -48,7 +54,8 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
     const qry = queryBuild();
     if (paginate && paginate.nextPage) {
       setLoading(true);
-      getMembers(`${qry}page=${paginate.nextPage}&${plusQuery}`)
+      const finalQuery = buildQueryString(qry, [`page=${paginate.nextPage}`]);
+      getMembers(finalQuery)
         .then(({ members, pagination }) => {
           setData((prev) => [...prev, ...members]);
           setPaginate(pagination);
@@ -116,9 +123,6 @@ const MemberList = ({ plusQuery = "plus=none" }) => {
       <div className="mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2">
           {/* Үр дүнгийн тоо */}
-          <div>
-            <strong>{paginate?.total || data.length}</strong> гишүүн байна
-          </div>
 
           {/* Filter Tag-ууд */}
           {["categories", "name", "q"].map((key) => {

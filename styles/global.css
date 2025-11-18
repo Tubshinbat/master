@@ -2035,6 +2035,29 @@ img {
   font-size: 13px;
 }
 
+.mobile-profile-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #041e42;
+  margin-left: 12px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(4, 30, 66, 0.08);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-profile-btn:hover {
+  background: #041e42;
+  color: #ffffff;
+}
+
+.mobile-profile-btn svg {
+  display: block;
+}
+
 @media (max-width: 1780px) {
 }
 
@@ -2115,9 +2138,22 @@ img {
     align-items: center;
     justify-content: flex-end;
   }
+
+  .mobile-profile-btn {
+    display: flex;
+  }
+
+  .header-burger-logo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 @media (max-width: 676px) {
+  .partner-cover {
+    height: auto;
+  }
   .search-filter span {
     display: none;
   }
